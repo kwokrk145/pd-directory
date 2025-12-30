@@ -121,3 +121,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+.hover-lift {
+  @apply transition-all duration-200 ease-in-out
+         will-change-transform
+         hover:-translate-y-1 hover:shadow-lg;
+}
