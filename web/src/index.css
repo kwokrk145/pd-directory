@@ -127,3 +127,10 @@
          will-change-transform
          hover:-translate-y-1 hover:shadow-lg;
 }
+
+.exp-box {
+  @apply flex w-full max-w-[11rem] h-16 px-4 bg-gray-100
+         justify-center items-center text-center rounded-lg font-semibold
+         border border-transparent hover:border-gray-400
+         hover:scale-105 transition-transform transition-colors duration-200 ease-out;
+}
