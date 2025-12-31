@@ -1,3 +1,4 @@
+import { navigateToPage } from "../lib/store";
 
 
 const Footer = () => {
@@ -6,7 +7,7 @@ const Footer = () => {
         <header className="cursor-pointer mt-auto text-gray-500">@2025 Theta Tau. All rights reserved.</header>
             <div className="flex ml-auto  space-x-4 items-center">
                 <p className="text-gray-500 cursor-pointer">Members</p>
-                <p className="text-gray-500 cursor-pointer">Login</p>
+                <p onClick={() => navigateToPage("login")} className="text-gray-500 cursor-pointer">Login</p>
 
             </div>
         </div>

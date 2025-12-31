@@ -3,7 +3,7 @@ import { Button } from "../components/ui/button";
 
 const Home = () => {
   return (
-    <div >
+    <div className="overflow-x-hidden">
       {/* Front Title Section*/}
       <div className="flex flex-col p-4 items-center px-8 min-h-[50vh] py-18 bg-[url('/brody.jpg')] bg-no-repeat bg-cover bg-center rounded-lg shadow-lg m-8">
         <div className="flex flex-col text-white font-bold p-8  ">
@@ -21,7 +21,7 @@ const Home = () => {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row w-full justify-center items-center px-8 mb-8 gap-8">
+      <div className="flex flex-col md:flex-row w-full justify-center items-center px-8 mb-12 gap-8">
         <div className="flex flex-col p-12 w-full rounded-lg shadow-lg ">
           <p className="text-lg font-bold text-center mb-8">Universities</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 place-items-center gap-8">
@@ -52,7 +52,6 @@ const Home = () => {
             <div className="exp-box">Gong Cha</div>
           </div>
         </div>
-      
       </div>
 
       {/* About Section */}
