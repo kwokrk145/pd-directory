@@ -3,8 +3,8 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 const Login = () => {
     return (
-        <div className=" bg-[url('/hopkins.jpg')] bg-no-repeat bg-center bg-cover px-6 md:px-10 py-8">
-            <div className="flex flex-col md:flex-row min-h-screen bg-white/95 space-x-8 md:space-x-10 w-full max-w-6xl mx-auto p-6 md:p-10 border border-black rounded-[32px]">
+        <div className=" flex-1 min-h-0 bg-[url('/hopkins.jpg')] md:bg-[50%_45%] bg-no-repeat bg-center bg-cover px-6 md:px-10 py-8">
+            <div className="flex flex-col md:flex-row gap-6 bg-white/95 space-x-8 md:space-x-10 w-full max-w-5xl mx-auto p-6 md:p-10 border border-black rounded-[32px]">
                 <div className="flex-1 flex flex-col justify-center rounded-3xl w-full gap-2 p-4 md:p-6">
                     <p className="text-3xl font-semibold mb-2">Welcome Back</p>
                     <p className="text-base text-gray-500">Enter your credentials to access your account</p>

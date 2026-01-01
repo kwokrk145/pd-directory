@@ -4,6 +4,7 @@ import Sidebar from "./custom/sidebar"
 import Home from "./pages/home"
 import { $router } from "./lib/router";
 import Login from "./pages/login";
+import Register from "./pages/register";
 
 function App() {
 
@@ -14,11 +15,12 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col justify-center min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-hidden">
     <Sidebar />
-    <div className="flex-grow">
+    <div className="flex-1 min-h-0 flex">
       {page.route === "home" && <Home />}
       {page.route === "login" && <Login />}
+      {page.route === "register" && <Register />}
     </div>
     
     <Footer />
