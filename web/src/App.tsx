@@ -5,6 +5,7 @@ import Home from "./pages/home"
 import { $router } from "./lib/router";
 import Login from "./pages/login";
 import Register from "./pages/register";
+import { Toaster } from "sonner";
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
     </div>
     
     <Footer />
+    <Toaster />
     </div>
   )
 }
