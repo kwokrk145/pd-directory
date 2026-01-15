@@ -3,12 +3,21 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import type { LoginInfo } from "../data/types";
 import { validateLoginInfo } from "../data/validator";
+import useAuth from "../hooks/use-auth";
+import { navigateToPage } from "../lib/store";
 const Login = () => {
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const { signIn } = useAuth();
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const data = Object.fromEntries(new FormData(e.currentTarget).entries()) as LoginInfo;
-        validateLoginInfo(data);
+        if (validateLoginInfo(data)) {
+            const success = await signIn(data.email, data.password);
+            if (success) {
+                navigateToPage("profile");
+            }
+        }
     }
     return (
         <div className=" flex-1 min-h-0 bg-[url('/hopkins.jpg')] md:bg-[50%_45%] bg-no-repeat bg-center bg-cover px-6 md:px-10 py-8">

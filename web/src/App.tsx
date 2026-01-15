@@ -6,6 +6,8 @@ import { $router } from "./lib/router";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import { Toaster } from "sonner";
+import Profile from "./pages/profile";
+import Members from "./pages/members";
 
 function App() {
 
@@ -22,6 +24,8 @@ function App() {
       {page.route === "home" && <Home />}
       {page.route === "login" && <Login />}
       {page.route === "register" && <Register />}
+      {page.route === "profile" && <Profile />}
+      {page.route === "members" && <Members />}
     </div>
     
     <Footer />

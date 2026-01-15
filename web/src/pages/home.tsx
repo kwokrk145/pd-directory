@@ -1,4 +1,5 @@
 import { Button } from "../components/ui/button";
+import { navigateToPage } from "../lib/store";
 
 
 const Home = () => {
@@ -10,7 +11,7 @@ const Home = () => {
           <p className="font-bold text-6xl">Theta Tau Directory</p>
           <p className="text-2xl mt-4 font-bold">@ Johns Hopkins University</p>
         </div>
-        <Button className="w-full sm:w-1/2 md:w-1/4 mt-auto ml-0 text-white bg-black text-base border-white border cursor-pointer hover-lift">Meet Our Members</Button>
+        <Button onClick={() => navigateToPage("members")} className="w-full sm:w-1/2 md:w-1/4 mt-auto ml-0 text-white bg-black text-base border-white border cursor-pointer hover-lift">Meet Our Members</Button>
       </div>
 
       {/* Where Members Have Worked Section*/}
@@ -34,8 +35,6 @@ const Home = () => {
             <div className="exp-box">UC Santa Barbara</div>
             <div className="exp-box">Northwestern</div>
             <div className="exp-box">Georgia Tech</div>
-
-
           </div>
         </div>
         <div className="flex flex-col p-12 w-full rounded-lg shadow-lg ">

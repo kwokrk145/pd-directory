@@ -2,16 +2,26 @@ import { Info } from "lucide-react";
 import { Input } from "../components/ui/input";
 import { validateRegisterInfo } from "../data/validator";
 import type { RegisterInfo } from "../data/types";
+import useAuth from "../hooks/use-auth";
+import { navigateToPage } from "../lib/store";
 
 const Register = () => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+  const { signUp } = useAuth();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget).entries()) as RegisterInfo;
-    validateRegisterInfo(data)
+    if (validateRegisterInfo(data)) {
+      const success = await signUp(data.firstName, data.lastName, data.email, data.password);
+      if (success) {
+        navigateToPage("profile");
+      } 
+      
+    }
   }
   return (
     <div className="flex-1 md:bg-[50%_55%] min-h-0 w-full bg-[url('/snowjhu.JPEG')] bg-no-repeat bg-center bg-cover px-6 md:px-10 py-8 flex items-center justify-center">
-      <div className="flex flex-col w-full h-full flex-1 gap-4 bg-white/95 max-w-xl border rounded-[32px] py-12 px-12 md:px-16 md:py-12">
+      <div className="flex flex-col w-full h-full flex-1 gap-4 bg-white/95 max-w-xl border rounded-[32px] py-12 px-12 md:px-16 md:py-12 ">
         <p className="text-3xl font-semibold">Create Account</p>
         <div className="flex items-center border border-gray-300 rounded-lg p-4 text-gray-500 bg-gray-200">
             <Info className="inline-block mr-2" /> 
@@ -30,7 +40,7 @@ const Register = () => {
             </div>
 
             <label className="text-md font-medium text-gray-700">Email Address</label>
-            <Input name="email" type="email" placeholder="your.email@jh.edu" className="w-full mt-2 mb-4"/>
+            <Input name="email" type="email" placeholder="your.email@example.com" className="w-full mt-2 mb-4"/>
             <label className="text-md font-medium text-gray-700">Password</label>
             <Input name="password" type="password" placeholder="Enter your password" className="w-full mt-2 mb-4"/>
             <label className="text-md font-medium text-gray-700">Confirm Password</label>
