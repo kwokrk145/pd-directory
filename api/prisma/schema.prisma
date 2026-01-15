@@ -19,4 +19,18 @@ model User {
   passwordHash  String 
   firstName     String
   lastName      String
+
+  experiences   Experience[]
+}
+
+model Experience {
+  id            Int     @id @default(autoincrement())
+  userId        Int 
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title         String
+  organization  String
+  startDate     String
+  endDate       String
+  description   String
 }
