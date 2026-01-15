@@ -1,6 +1,7 @@
 import { useStore } from "@nanostores/react";
 import { $user } from "../lib/store";
 import { Button } from "../components/ui/button";
+import AddExperience from "../components/ui/add-experience";
 
 const Profile = () => {
   const user = useStore($user);
@@ -24,7 +25,7 @@ const Profile = () => {
                     Your professional and academic experience
                 </p>
             </div>
-            <Button className="cursor-pointer hover-lift text-base p-5">Add Experience</Button>
+            <AddExperience />
         </div>
       </div>
     </div>
