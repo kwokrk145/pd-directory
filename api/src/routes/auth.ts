@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { prisma } from "../../lib/prisma";
 import bcrypt from "bcrypt";
+import { validate } from "../validators/validate";
+import { registerSchema, loginSchema } from "../validators/schema";
 
 const router = Router();
 
-router.post("/register", async (req, res) => {
+router.post("/register", validate(registerSchema), async (req, res) => {
     // Registration logic here
     const { firstName, lastName, email, password } = req.body;
 
@@ -40,7 +42,7 @@ router.post("/register", async (req, res) => {
         
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", validate(loginSchema), async (req, res) => {
     const { email, password } = req.body;
     try {
         const existingUser = await prisma.user.findUnique({
