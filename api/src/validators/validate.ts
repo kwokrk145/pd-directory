@@ -8,9 +8,9 @@ export const validate =
         
         // return error if not
         if (!result.success) {
+            const firstIssue = result.error.issues[0];
             return res.status(400).json({
-                message: "Validation failed",
-                errors: result.error.flatten()
+                message: firstIssue?.message ?? "Invalid input",
             });
         }
 

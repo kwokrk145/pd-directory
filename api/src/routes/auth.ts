@@ -10,7 +10,6 @@ router.post("/register", validate(registerSchema), async (req, res) => {
     // Registration logic here
     const { firstName, lastName, email, password } = req.body;
 
-    // validation code goes here
     try {
         const existingUser = await prisma.user.findUnique({
             where: { email },
