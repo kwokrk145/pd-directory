@@ -7,7 +7,6 @@ import { registerSchema, loginSchema } from "../validators/schema";
 const router = Router();
 
 router.post("/register", validate(registerSchema), async (req, res) => {
-    // Registration logic here
     const { firstName, lastName, email, password } = req.body;
 
     try {
@@ -27,6 +26,9 @@ router.post("/register", validate(registerSchema), async (req, res) => {
                 passwordHash,
             },
         });
+
+        req.session.userId = newUser.id;
+
         return res.status(201).json({
             id: newUser.id,
             email: newUser.email,
@@ -59,6 +61,9 @@ router.post("/login", validate(loginSchema), async (req, res) => {
                 message: "Invalid email or password",
             });
         }
+
+        req.session.userId = existingUser.id;
+
         return res.status(200).json({
             id: existingUser.id,
             email: existingUser.email,
@@ -72,6 +77,47 @@ router.post("/login", validate(loginSchema), async (req, res) => {
     } 
 
 });
+
+router.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Failed to log out" });
+    }
+
+    res.clearCookie("pd.sid"); // same name as session cookie as shown in app.ts
+
+    return res.status(200).json({ message: "Logged out" });
+  });
+});
+
+
+router.get("/me", async (req, res) => {
+    const userId = req.session.userId;
+    if (!userId) {
+        return res.status(401).json({
+            message: "Unauthorized"
+        });
+    }
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                experiences: true,
+            }
+        });
+        return res.status(200).json(user);
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+});
+    
+
 
 
 export default router;
