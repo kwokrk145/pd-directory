@@ -1,6 +1,6 @@
 import { useStore } from "@nanostores/react";
-import { register, login } from "../data/api";
-import { $user, setUser } from "../lib/store";
+import { register, login, logout } from "../data/api";
+import { $user, clearUser, setUser } from "../lib/store";
 import { toast } from "sonner";
 
 function useAuth() {
@@ -13,7 +13,7 @@ function useAuth() {
             setUser(profile);
             return true;
         } catch (error) {
-            const errorMessage = (error as Error).message ?? "Please try again later!";
+            const errorMessage = (error as Error).message ?? "Sign in Failed! Please try again later!";
             toast.error("Login failed: " + errorMessage);
             return false;
 
@@ -26,12 +26,24 @@ function useAuth() {
             setUser(profile);
             return true;
         } catch (error) {
-            const errorMessage = (error as Error).message ?? "Please try again later!";
+            const errorMessage = (error as Error).message ?? "Registration Failed! Please try again later!";
             toast.error("Registration failed: " + errorMessage);
             return false;
         }
     }
-    return { user, signIn, signUp };
+
+    const signOut = async () => {
+        try {
+            await logout();
+            clearUser();
+            return true;
+        } catch (error) {
+            const errorMessage = (error as Error).message ?? "Logout Failed! Please try again later!";
+            toast.error("Logout failed: " + errorMessage);
+            return false;
+        }
+    }
+    return { user, signIn, signUp, signOut };
 }
 
 export default useAuth;
