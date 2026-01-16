@@ -1,6 +1,8 @@
 import { API_URL } from "../env";
 import type { Experience, UserType } from "./types";
 
+// ACCOUNT AUTHENTICATION API CALLS
+// ----------------------------------
 
 // registering a new user
 export const register = async (
@@ -69,6 +71,10 @@ export const logout = async (): Promise<void> => {
     }
 };
 
+
+// PROFILE API CALLS
+// ------------------------------
+
 // fetching current user profile
 export const getUserProfile = async (): Promise<UserType> => {
     try {
@@ -120,6 +126,8 @@ export const getUserById = async (userId: number): Promise<UserType> => {
     }
 };
 
+// EXPERIENCE API CALLS
+// ------------------------------
 
 // create experience
 export const createExperience = async (
