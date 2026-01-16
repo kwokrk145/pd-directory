@@ -1,9 +1,11 @@
 import { Router } from "express";
 import { prisma } from "../../lib/prisma";
+import { validate } from "../validators/validate";
+import { experienceSchema } from "../validators/schema";
 
 const experienceRouter = Router();
 
-experienceRouter.post("/", async (req, res) => {
+experienceRouter.post("/", validate(experienceSchema), async (req, res) => {
     const { title, organization, startDate, endDate, description } = req.body;
 
     const userId = req.session.userId;
@@ -34,7 +36,7 @@ experienceRouter.post("/", async (req, res) => {
 });
 
 
-experienceRouter.patch("/:experienceId", async (req, res) => {
+experienceRouter.patch("/:experienceId", validate(experienceSchema), async (req, res) => {
     const userId = req.session.userId;
     if (!userId) {
         return res.status(401).json({
