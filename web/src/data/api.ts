@@ -120,6 +120,30 @@ export const getUserById = async (userId: number): Promise<UserType> => {
     }
 };
 
+
+// create experience
+export const createExperience = async (
+    title: string, 
+    organization: string,
+    startDate: string, 
+    endDate: string, 
+    description?:string): Promise<Experience> => {  
+        try {
+            const response = await fetch(`${API_URL}/experience`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ title, organization, startDate, endDate, description }),
+                credentials: "include",
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message);
+            }
+            return data as Experience;
+        } catch (error) {
+            throw new Error((error as Error).message);
+        }
+};
 // update experience
 export const updateExperience = async (
     title: string, 
