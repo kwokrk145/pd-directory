@@ -1,6 +1,8 @@
 import { API_URL } from "../env";
-import type { UserType } from "./types";
+import type { Experience, UserType } from "./types";
 
+
+// registering a new user
 export const register = async (
     firstName: string,
     lastName: string,
@@ -24,6 +26,7 @@ export const register = async (
     }
 };
 
+// logging in 
 export const login = async (
     email: string,
     password: string
@@ -49,3 +52,111 @@ export const login = async (
     
 
 };
+
+
+// logging out
+export const logout = async (): Promise<void> => {
+    try {
+        const response = await fetch(`${API_URL}/auth/logout`, {
+            method: "POST",
+            credentials: "include",
+        });
+        if (!response.ok) {
+            throw new Error("Failed to logout");
+        }
+    } catch (error) {
+        throw new Error((error as Error).message);
+    }
+};
+
+// fetching current user profile
+export const getUserProfile = async (): Promise<UserType> => {
+    try {
+        const response = await fetch(`${API_URL}/profile/me`, {
+            method: "GET",
+            credentials: "include",
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+        return data as UserType;
+    } catch (error) {
+        throw new Error((error as Error).message);
+    }
+};
+
+// fetching all users
+export const getAllUsers = async (): Promise<UserType[]> => {
+    try {
+        const response = await fetch(`${API_URL}/profile/users`, { 
+            method: "GET",
+            credentials: "include",
+        });
+        const data = await response.json(); 
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+        return data as UserType[];
+    } catch (error) {
+        throw new Error((error as Error).message);
+    }
+};
+
+// fetching a user by ID
+export const getUserById = async (userId: number): Promise<UserType> => {
+    try {
+        const response = await fetch(`${API_URL}/profile/users/${userId}`, {
+            method: "GET",
+            credentials: "include",
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+        return data as UserType;
+    } catch (error) {
+        throw new Error((error as Error).message);
+    }
+};
+
+// update experience
+export const updateExperience = async (
+    title: string, 
+    organization: string, 
+    startDate: string, 
+    endDate: string, 
+    description?:string): Promise<Experience> => {
+        try {
+            const response = await fetch(`${API_URL}/experience`, {
+                method: "PATCH",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ title, organization, startDate, endDate, description }),
+                credentials: "include",
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message);
+            }
+            return data as Experience;
+        } catch (error) {
+            throw new Error((error as Error).message);
+        }
+
+}
+
+// delete experience
+export const deleteExperience = async (experienceId: number): Promise<void> => {
+    try {
+        const response = await fetch(`${API_URL}/experience/${experienceId}`, { 
+            method: "DELETE",
+            credentials: "include",
+        });
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        throw new Error((error as Error).message);
+    }
+}
