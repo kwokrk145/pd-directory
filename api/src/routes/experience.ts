@@ -7,11 +7,9 @@ const experienceRouter = Router();
 
 experienceRouter.post("/", validate(experienceSchema), async (req, res) => {
     const { title, organization, startDate, endDate, description } = req.body;
-    console.log(req.body);
 
 
     const userId = Number(req.session.userId);
-    console.log("session.userId:", req.session.userId, typeof req.session.userId);
 
     if (!userId) {
         return res.status(401).json({
@@ -32,7 +30,6 @@ experienceRouter.post("/", validate(experienceSchema), async (req, res) => {
         });
         return res.status(201).json(newExperience);
     } catch (error) {
-        console.error(error);
         return res.status(500).json({
             message: "Internal server error"
         });
