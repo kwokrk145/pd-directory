@@ -32,5 +32,5 @@ model Experience {
   organization  String
   startDate     String
   endDate       String
-  description   String
+  description   String?
 }

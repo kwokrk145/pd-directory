@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth';
 import session from "express-session";
 import experienceRouter from './routes/experience';
+import profileRouter from './routes/profile';
 
 const app = express();
 
@@ -13,7 +13,6 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(cookieParser());
 
 app.use(
   session({
@@ -32,6 +31,7 @@ app.use(
 
 app.use('/auth', authRoutes);
 app.use('/experience', experienceRouter);
+app.use('/profile', profileRouter); 
 
 
 app.listen(3000, () => {

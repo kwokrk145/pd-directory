@@ -7,8 +7,12 @@ const experienceRouter = Router();
 
 experienceRouter.post("/", validate(experienceSchema), async (req, res) => {
     const { title, organization, startDate, endDate, description } = req.body;
+    console.log(req.body);
 
-    const userId = req.session.userId;
+
+    const userId = Number(req.session.userId);
+    console.log("session.userId:", req.session.userId, typeof req.session.userId);
+
     if (!userId) {
         return res.status(401).json({
             message: "Unauthorized"
@@ -28,6 +32,7 @@ experienceRouter.post("/", validate(experienceSchema), async (req, res) => {
         });
         return res.status(201).json(newExperience);
     } catch (error) {
+        console.error(error);
         return res.status(500).json({
             message: "Internal server error"
         });
@@ -85,14 +90,14 @@ experienceRouter.delete("/:experienceId", async (req, res) => {
             message: "Unauthorized"
         });
     }
-    const experiencedId = Number(req.params.experienceId);
-    if (isNaN(experiencedId)) {
+    const experienceId = Number(req.params.experienceId);
+    if (isNaN(experienceId)) {
         return res.status(400).json({
             message: "Invalid experience ID"
         });
     }
     const experience = await prisma.experience.findUnique({
-        where  : { id: experiencedId }
+        where  : { id: experienceId }
     });
     if (!experience || experience.userId !== userId) {
         return res.status(404).json({
@@ -101,7 +106,7 @@ experienceRouter.delete("/:experienceId", async (req, res) => {
     }
     try {
         await prisma.experience.delete({
-            where: { id: experiencedId }
+            where: { id: experienceId }
         });
         return res.status(200).json({
             message: "Experience deleted"

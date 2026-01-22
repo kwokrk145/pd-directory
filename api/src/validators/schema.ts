@@ -17,4 +17,5 @@ export const experienceSchema = z.object({
     organization: z.string().min(1, "Organization is required"),
     startDate: z.string().min(1, "Start date is required"),
     endDate: z.string().min(1, "End date is required"),
+    description: z.string().optional(),
 });
