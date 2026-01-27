@@ -5,6 +5,7 @@ import type { LoginInfo } from "../data/types";
 import { validateLoginInfo } from "../data/validator";
 import useAuth from "../hooks/use-auth";
 import { navigateToPage } from "../lib/store";
+
 const Login = () => {
 
     const { signIn } = useAuth();

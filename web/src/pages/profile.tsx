@@ -1,13 +1,18 @@
 import { useStore } from "@nanostores/react";
 import { $user } from "../lib/store";
-import { Button } from "../components/ui/button";
 import AddExperience from "../components/ui/add-experience";
+import Experiences  from "../components/ui/experience";
+import { useEffect } from "react";
+
 
 const Profile = () => {
   const user = useStore($user);
-
+  useEffect(() => {
+    console.log("TESTEST");
+    console.log(user.experiences)
+  }, []);
   return (
-    <div className="w-full flex justify-center mt-10 gap-8">
+    <div className="w-full flex justify-center mt-10 gap-8 p-8 md:p-0">
       {/* Shared column */}
       <div className="w-full flex flex-col max-w-5xl gap-8">
         {/* Profile card */}
@@ -27,6 +32,13 @@ const Profile = () => {
             </div>
             <AddExperience />
         </div>
+        {
+          user.experiences && user.experiences.length > 0 && (
+            user.experiences.map((exp) => (
+              <Experiences key={exp.id} experience={exp} />
+            ))
+          )
+        }
       </div>
     </div>
   );

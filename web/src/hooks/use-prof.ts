@@ -25,7 +25,7 @@ function useProfile() {
         }
     };
 
-    const fetchCurrentUserProfile = async () => {
+    const fetchProf = async () => {
         try {
             const profile = await getUserProfile();
             return profile;
@@ -35,7 +35,7 @@ function useProfile() {
             return false;
         }
     };
-    return { fetchUsers, fetchUserById, fetchCurrentUserProfile }
+    return { fetchUsers, fetchUserById, fetchProf }
 
 };
 

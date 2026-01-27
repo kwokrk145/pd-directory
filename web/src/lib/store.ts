@@ -9,7 +9,8 @@ const defaultUser: UserType = {
     firstName: "",
     lastName: "",
     username: "",
-    email: ""
+    email: "",
+    experiences: [],
 }
 
 export const $user = map<UserType>(defaultUser);
