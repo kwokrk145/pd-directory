@@ -10,6 +10,7 @@ function useExp() {
         description?:string) => {
             try {
                 const experience = await createExperience(title, organization, startDate, endDate, description);
+                toast.success("Experience added successfully!");
                 return experience;
             } catch (error) {
                 const errorMessage = (error as Error).message ?? "Couldn't add experience! Please try again later!";
@@ -19,13 +20,15 @@ function useExp() {
     };
 
     const editExperience = async (
+        id: number,
         title: string,
         organization: string,
         startDate: string,
         endDate: string,
         description?:string) => {
             try {
-                const experience = await updateExperience(title, organization, startDate, endDate, description);
+                const experience = await updateExperience(id, title, organization, startDate, endDate, description);
+                toast.success("Experience updated successfully!");
                 return experience;
             } catch (error) {
                 const errorMessage = (error as Error).message ?? "Couldn't update experience! Please try again later!";
@@ -37,6 +40,7 @@ function useExp() {
     const removeExperience = async (experienceId: number) => {
         try {
             await deleteExperience(experienceId);
+            toast.success("Experience deleted successfully!");
             return true;
         } catch (error) {
             const errorMessage = (error as Error).message ?? "Couldn't delete experience! Please try again later!";

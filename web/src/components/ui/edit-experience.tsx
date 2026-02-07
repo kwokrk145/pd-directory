@@ -13,16 +13,24 @@ import {
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { Textarea } from "../ui/textarea";
+import type { Experience } from "../../data/types";
+import { MdOutlineModeEdit } from "react-icons/md";
 
-const AddExperience = ({ setRefresh }: { setRefresh: React.Dispatch<React.SetStateAction<boolean>> }) => {
-    const { addExperience } = useExp();
+
+type EditExperienceProps = {
+    experience: Experience;
+    setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const EditExperience = ({ experience, setRefresh }: EditExperienceProps) => {
+    const { editExperience } = useExp();
     
     const [formData, setFormData] = useState({
-        title: "",
-        organization: "",
-        start: "",
-        end: "",
-        description: ""
+        title: experience.title,
+        organization: experience.organization,
+        start: experience.startDate,
+        end: experience.endDate,
+        description: experience.description
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -35,18 +43,18 @@ const AddExperience = ({ setRefresh }: { setRefresh: React.Dispatch<React.SetSta
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await addExperience(formData.title, 
+        await editExperience(experience.id, formData.title, 
                       formData.organization,
                       formData.start,
                       formData.end,
                       formData.description);
         
         setFormData({
-            title: "",
-            organization: "",
-            start: "",
-            end: "",
-            description: ""
+            title: experience.title,
+            organization: experience.organization,
+            start: experience.startDate,
+            end: experience.endDate,
+            description: experience.description
         });
         setRefresh(prev => !prev);
     };
@@ -55,12 +63,12 @@ const AddExperience = ({ setRefresh }: { setRefresh: React.Dispatch<React.SetSta
         <div>
             <Dialog>
                 <DialogTrigger asChild>
-                    <Button className="cursor-pointer hover-lift text-base p-5">Add Experience</Button>
+                    <MdOutlineModeEdit className="ml-auto text-xl cursor-pointer" />
                 </DialogTrigger>
                 <DialogContent>
                     <form onSubmit={handleSubmit}>
                         <DialogHeader>
-                            <DialogTitle className="text-lg font-semibold">Add New Experience</DialogTitle>
+                            <DialogTitle className="text-lg font-semibold">Edit Experience</DialogTitle>
                         </DialogHeader>
                         <div className="grid gap-4">
                             <div className="grid gap-3">
@@ -124,4 +132,4 @@ const AddExperience = ({ setRefresh }: { setRefresh: React.Dispatch<React.SetSta
     );
 };
 
-export default AddExperience;
+export default EditExperience;

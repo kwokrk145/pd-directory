@@ -78,7 +78,7 @@ export const logout = async (): Promise<void> => {
 // fetching current user profile
 export const getUserProfile = async (): Promise<UserType> => {
     try {
-        const response = await fetch(`${API_URL}/profile/me`, {
+        const response = await fetch(`${API_URL}/auth/me`, {
             method: "GET",
             credentials: "include",
         });
@@ -154,13 +154,14 @@ export const createExperience = async (
 };
 // update experience
 export const updateExperience = async (
+    experienceId: number,
     title: string, 
     organization: string, 
     startDate: string, 
     endDate: string, 
     description?:string): Promise<Experience> => {
         try {
-            const response = await fetch(`${API_URL}/experience`, {
+            const response = await fetch(`${API_URL}/experience/${experienceId}`, {
                 method: "PATCH",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({ title, organization, startDate, endDate, description }),

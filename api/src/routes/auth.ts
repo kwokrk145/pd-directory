@@ -34,6 +34,7 @@ router.post("/register", validate(registerSchema), async (req, res) => {
             email: newUser.email,
             firstName: newUser.firstName,
             lastName: newUser.lastName,
+
         });
     } catch (error) {
         return res.status(500).json({ 
@@ -48,6 +49,7 @@ router.post("/login", validate(loginSchema), async (req, res) => {
     try {
         const existingUser = await prisma.user.findUnique({
             where: { email },
+            include: { experiences: true }
         });
         if (!existingUser) {
             return res.status(400).json({
@@ -69,6 +71,7 @@ router.post("/login", validate(loginSchema), async (req, res) => {
             email: existingUser.email,
             firstName: existingUser.firstName,
             lastName: existingUser.lastName,
+            experiences: existingUser.experiences,
         });
     } catch (error) {
         return res.status(500).json({ 
