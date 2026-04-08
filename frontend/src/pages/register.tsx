@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -44,7 +44,7 @@ export const Register = () => {
       setForm((current) => ({ ...current, [field]: event.target.value }));
     };
 
-  const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const firstName = form.firstName.trim();
