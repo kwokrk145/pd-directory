@@ -21,15 +21,42 @@ export const Home = () => {
               connections across every discipline in engineering
             </h2>
             <div className="flex flex-row items-center justify-center gap-4 font-serif text-white">
-                <div className="flex h-12 min-w-55 transition hover:bg-gray-600 cursor-pointer items-center justify-center rounded-2xl border border-gray-100 px-6 py-3 text-center">
+                <div className="flex h-12 min-w-55 transition hover:bg-gray-600 cursor-pointer items-center justify-center rounded-2xl border border-gray-500 px-6 py-3 text-center">
                     <h1>Browse the Directory</h1>
                 </div>
-                <div className="flex h-12 min-w-55 transition hover:bg-gray-600 cursor-pointer items-center justify-center rounded-2xl border border-gray-100 px-6 py-3 text-center">
+                <div className="flex h-12 min-w-55 transition hover:bg-gray-600 cursor-pointer items-center justify-center rounded-2xl border border-gray-500 px-6 py-3 text-center">
                     <h1>Create your Profile</h1>
                 </div>
 
             </div>
         
+        </div>
+
+      </section>
+      <section className="bg-[#2F3E6B] h-[20vh] flex flex-row text-3xl font-serif  text-white items-center justify-center">
+        <div className="flex flex-col w-1/3 text-center border border-gray-600 h-full justify-center">
+            <h1>
+                240+
+            </h1>
+            <h2 className="text-base text-gray-500">
+                Active members and alumni
+            </h2>
+        </div>
+        <div className="flex justify-center h-full border-gray-600 border flex-col w-1/3 text-center">
+            <h1>
+                60+
+            </h1>
+            <h2 className="text-base  text-gray-500">
+                Companies represented
+            </h2>
+        </div>
+        <div className="flex flex-col justify-center h-full border border-gray-600 w-1/3 text-center">
+            <h1>
+                12
+            </h1>
+            <h2 className="text-base text-gray-500">
+                Graduate programs
+            </h2>
         </div>
 
       </section>
