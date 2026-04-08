@@ -1,3 +1,4 @@
+import Footer from "./components/footer"
 import { Sidebar } from "./components/sidebar"
 import Home from "./pages/home"
 
@@ -9,6 +10,7 @@ function App() {
       <div className="min-h-screen">
         <Sidebar />
         <Home />
+        <Footer />
       </div>
     </>
   )
