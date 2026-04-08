@@ -21,12 +21,12 @@ export const Home = () => {
               connections across every discipline in engineering
             </h2>
             <div className="flex flex-row items-center justify-center gap-4 font-serif text-white">
-                <div className="flex h-12 min-w-55 transition hover:bg-gray-600 cursor-pointer items-center justify-center rounded-2xl border border-gray-500 px-6 py-3 text-center">
+                <button className="flex h-12 min-w-55 transition hover:bg-gray-600 cursor-pointer items-center justify-center rounded-2xl border border-gray-500 px-6 py-3 text-center">
                     <h1>Browse the Directory</h1>
-                </div>
-                <div className="flex h-12 min-w-55 transition hover:bg-gray-600 cursor-pointer items-center justify-center rounded-2xl border border-gray-500 px-6 py-3 text-center">
+                </button>
+                <button className="flex h-12 min-w-55 transition hover:bg-gray-600 cursor-pointer items-center justify-center rounded-2xl border border-gray-500 px-6 py-3 text-center">
                     <h1>Create your Profile</h1>
-                </div>
+                </button>
 
             </div>
         
@@ -58,6 +58,28 @@ export const Home = () => {
                 Graduate programs
             </h2>
         </div>
+
+      </section>
+      <section className="bg-[#0F2044] px-16 flex flex-col h-[60vh] gap-3 items-start">
+        <h1 className="text-lg font-serif text-[#B8972A] px-12 pt-10">
+            ALUMNI NETWORK
+        </h1>
+        <h1 className="text-4xl font-serif font-white px-12 text-white">
+            Our brothers have go on to -
+        </h1>
+        <h1 className="text-lg px-12 text-gray-500 font-serif">
+            From leading companies to top PhD programs, Theta Tau members are everywhere!
+        </h1>
+        <div className="flex flex-row gap-6 px-12 pt-3 font-serif text-white">
+            <button className="px-12 h-10 min-w-50 cursor-pointer border transition hover:bg-gray-600 border-gray-600 rounded-lg">
+                <h1>Companies</h1>
+            </button>
+            <button className="px-12 h-10 min-w-50 cursor-pointer border transition hover:bg-gray-600 border-gray-600 rounded-lg">
+                <h1>Graduate Schools</h1>
+            </button>
+
+        </div>
+        
 
       </section>
     </div>
