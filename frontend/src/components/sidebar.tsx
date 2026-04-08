@@ -5,7 +5,7 @@ export const Sidebar = () => {
 
   return (
     <div className="flex flex-row border-b border-[#f0cf86]/18 bg-[#300811] py-4">
-      <div className="flex w-full gap-3 px-6">
+      <div onClick={() => navigate("/")} className="flex w-full gap-3 cursor-pointer px-6">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#f0cf86] bg-[#f0cf86] text-lg text-[#300811]">
           <span className="font-serif font-normal text-[#300811]">θT</span>
         </div>
@@ -17,7 +17,7 @@ export const Sidebar = () => {
       </div>
 
       <div className="ml-auto flex items-center gap-3 px-6 font-serif text-[#fff8ee]">
-        <div className="min-w-25 cursor-pointer whitespace-nowrap rounded-xl border border-[#f0cf86]/22 bg-white/6 p-2 text-center transition hover:bg-[#571120]">
+        <div onClick={() => navigate("/directory")} className="min-w-25 cursor-pointer whitespace-nowrap rounded-xl border border-[#f0cf86]/22 bg-white/6 p-2 text-center transition hover:bg-[#571120]">
           Directory
         </div>
         <div onClick={() => navigate("/login")} className="min-w-25 cursor-pointer whitespace-nowrap rounded-xl border border-[#f0cf86]/22 bg-white/6 p-2 text-center transition hover:bg-[#571120]">

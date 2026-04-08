@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Card from "../components/card";
 
 const unis = [
@@ -24,6 +25,7 @@ const companies = [
 ];
 
 export const Home = () => {
+  const navigate = useNavigate();
   const [category, setCategory] = useState<"companies" | "schools">("companies");
   const displayedItems = category === "companies" ? companies : unis;
 
@@ -49,10 +51,18 @@ export const Home = () => {
               connections across every discipline in engineering
             </h2>
             <div className="flex flex-row items-center justify-center gap-4 font-serif text-[#fff8ee]">
-                <button className="flex h-12 min-w-55 cursor-pointer items-center justify-center rounded-2xl border border-[#f0cf86]/22 bg-white/6 px-6 py-3 text-center transition hover:bg-[#571120]">
+                <button
+                  type="button"
+                  onClick={() => navigate("/directory")}
+                  className="flex h-12 min-w-55 cursor-pointer items-center justify-center rounded-2xl border border-[#f0cf86]/22 bg-white/6 px-6 py-3 text-center transition hover:bg-[#571120]"
+                >
                     <h1>Browse the Directory</h1>
                 </button>
-                <button className="flex h-12 min-w-55 cursor-pointer items-center justify-center rounded-2xl border border-[#f0cf86]/70 bg-[#f0cf86] px-6 py-3 text-center text-[#300811] transition hover:bg-[#f6dc9d]">
+                <button
+                  type="button"
+                  onClick={() => navigate("/register")}
+                  className="flex h-12 min-w-55 cursor-pointer items-center justify-center rounded-2xl border border-[#f0cf86]/70 bg-[#f0cf86] px-6 py-3 text-center text-[#300811] transition hover:bg-[#f6dc9d]"
+                >
                     <h1>Create your Profile</h1>
                 </button>
 

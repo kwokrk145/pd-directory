@@ -1,3 +1,7 @@
+import { useState, type ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
 const loginHighlights = [
   {
     title: "Edit your profile",
@@ -16,7 +20,45 @@ const loginHighlights = [
   },
 ];
 
+type LoginForm = {
+  email: string;
+  password: string;
+};
+
 export const Login = () => {
+  const navigate = useNavigate();
+  const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
+
+  const handleChange =
+    (field: keyof LoginForm) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setForm((current) => ({ ...current, [field]: event.target.value }));
+    };
+
+  const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
+    event.preventDefault();
+
+    const email = form.email.trim();
+    const password = form.password.trim();
+
+    if (!email || !password) {
+      toast.error("Enter both your email address and password.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Enter a valid email address.");
+      return;
+    }
+
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters.");
+      return;
+    }
+
+    toast.success("Login form looks valid. Connect this to your API next.");
+  };
+
   return (
     <div className="flex min-h-full w-full flex-1 overflow-hidden">
       <div className="flex min-h-full w-1/2 items-center justify-center border-r border-[#f0cf86]/12 bg-[#300811] px-6 py-8">
@@ -35,7 +77,7 @@ export const Login = () => {
 
           <div className="space-y-5 pt-1">
             {loginHighlights.map((item) => (
-              <div key={item.title} className="flex flex-colitems-start gap-3 mb-8">
+              <div key={item.title} className="mb-6 flex items-start gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#f0cf86]/12 bg-white/4 text-lg text-[#f0cf86]">
                   <span>{item.icon}</span>
                 </div>
@@ -54,19 +96,19 @@ export const Login = () => {
         <div className="w-full max-w-md">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6e7f9e]">Member Sign-In</p>
 
-          <h1 className="mt-4 font-serif text-3xl tracking-tight text-[#10244d]">
-            Welcome back
-          </h1>
+          <h1 className="mt-4 font-serif text-3xl tracking-tight text-[#10244d]">Welcome back</h1>
 
           <p className="mt-3 max-w-md font-serif text-base leading-7 text-[#6c7c97]">
             Sign in to edit your profile and manage your experiences.
           </p>
 
-          <form className="mt-6 space-y-5">
+          <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
             <div>
               <label className="mb-2 block font-serif text-base font-medium text-[#5e6f8d]">Email address</label>
               <input
                 type="email"
+                value={form.email}
+                onChange={handleChange("email")}
                 placeholder="you@jhu.edu"
                 className="h-12 w-full rounded-2xl bg-[#2f302d] px-4 font-serif text-base text-[#9fb0cb] outline-none placeholder:text-[#9fb0cb]"
               />
@@ -78,6 +120,8 @@ export const Login = () => {
               </div>
               <input
                 type="password"
+                value={form.password}
+                onChange={handleChange("password")}
                 placeholder="••••••••"
                 className="h-12 w-full rounded-2xl bg-[#2f302d] px-4 font-serif text-base text-[#9fb0cb] outline-none placeholder:text-[#9fb0cb]"
               />
@@ -85,7 +129,7 @@ export const Login = () => {
 
             <button
               type="submit"
-              className="h-12 w-full rounded-2xl border transition hover:bg-gray-300 cursor-pointer border-[#efe4d1] bg-[#f4ede3] font-serif text-base text-black"
+              className="h-12 w-full cursor-pointer rounded-2xl border border-[#efe4d1] bg-[#f4ede3] font-serif text-base text-black transition hover:bg-gray-300"
             >
               Sign in to your account
             </button>
@@ -107,7 +151,11 @@ export const Login = () => {
 
           <p className="mt-6 text-center font-sans text-sm text-[#61728f]">
             Not a member yet?{" "}
-            <button type="button" className="font-semibold cursor-pointer text-[#10244d] underline underline-offset-4">
+            <button
+              type="button"
+              onClick={() => navigate("/register")}
+              className="font-semibold cursor-pointer text-[#10244d] underline underline-offset-4"
+            >
               Sign up
             </button>
           </p>
