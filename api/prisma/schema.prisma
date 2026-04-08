@@ -19,6 +19,8 @@ model User {
   passwordHash  String 
   firstName     String
   lastName      String
+  major         String?
+  graduationYear String?
 
   experiences   Experience[]
 }

@@ -6,6 +6,8 @@ import Home from "./pages/home";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Directory from "./pages/directory";
+import Profile from "./pages/profile";
+import UserProfile from "./pages/user-profile";
 
 function App() {
   const location = useLocation();
@@ -20,6 +22,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/directory" element={<Directory />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/users/:id" element={<UserProfile />} />
         </Routes>
       </main>
 

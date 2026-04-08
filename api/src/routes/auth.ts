@@ -34,6 +34,8 @@ router.post("/register", validate(registerSchema), async (req, res) => {
             email: newUser.email,
             firstName: newUser.firstName,
             lastName: newUser.lastName,
+            major: newUser.major,
+            graduationYear: newUser.graduationYear,
 
         });
     } catch (error) {
@@ -71,6 +73,8 @@ router.post("/login", validate(loginSchema), async (req, res) => {
             email: existingUser.email,
             firstName: existingUser.firstName,
             lastName: existingUser.lastName,
+            major: existingUser.major,
+            graduationYear: existingUser.graduationYear,
             experiences: existingUser.experiences,
         });
     } catch (error) {
@@ -109,6 +113,8 @@ router.get("/me", async (req, res) => {
                 email: true,
                 firstName: true,
                 lastName: true,
+                major: true,
+                graduationYear: true,
                 experiences: true,
             }
         });

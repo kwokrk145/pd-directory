@@ -1,21 +1,22 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type ComponentProps } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import useAuth from "../hooks/use-auth";
 
 const registerHighlights = [
   {
     title: "Build your profile",
-    description: "Share internships, research, leadership, and the path you have taken so far.",
-    icon: "○",
+    description: "smth smth relevant and important idk placeholder.",
+    icon: "P",
   },
   {
-    title: "Stay discoverable",
-    description: "Help younger members and alumni find the right people for advice and introductions.",
-    icon: "◔",
+    title: "Join the directory",
+    description: "smth smth relevant and important idk placeholder",
+    icon: "D",
   },
   {
     title: "Strengthen the network",
-    description: "A better directory becomes a stronger professional resource for the entire chapter.",
+    description: "smth smth relevant and important idk placeholder.",
     icon: "+",
   },
 ];
@@ -30,6 +31,7 @@ type RegisterForm = {
 
 export const Register = () => {
   const navigate = useNavigate();
+  const { signUp, isAuthenticated } = useAuth();
   const [form, setForm] = useState<RegisterForm>({
     firstName: "",
     lastName: "",
@@ -38,13 +40,19 @@ export const Register = () => {
     confirmPassword: "",
   });
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/profile");
+    }
+  }, [isAuthenticated, navigate]);
+
   const handleChange =
     (field: keyof RegisterForm) =>
     (event: ChangeEvent<HTMLInputElement>) => {
       setForm((current) => ({ ...current, [field]: event.target.value }));
     };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit: ComponentProps<"form">["onSubmit"] = async (event) => {
     event.preventDefault();
 
     const firstName = form.firstName.trim();
@@ -73,7 +81,13 @@ export const Register = () => {
       return;
     }
 
-    toast.success("Registration form looks valid. Connect this to your API next.");
+    try {
+      await signUp(firstName, lastName, email, password);
+      toast.success("Account created successfully.");
+      navigate("/profile");
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
 
   return (
@@ -81,7 +95,7 @@ export const Register = () => {
       <div className="flex min-h-full w-1/2 items-center justify-center border-r border-[#f0cf86]/12 bg-[#300811] px-6 py-8">
         <div className="flex max-w-xl flex-col gap-8">
           <div className="rounded-3xl border border-[#f0cf86]/20 bg-[#3a1a0f] px-4 py-2">
-            <h1 className="font-serif text-base text-[#f0cf86]">• CHAPTER ACCESS</h1>
+            <h1 className="font-serif text-base text-[#f0cf86]">Chapter Access</h1>
           </div>
 
           <h1 className="font-serif text-3xl leading-tight text-[#fff8ee]">
@@ -95,7 +109,7 @@ export const Register = () => {
           <div className="space-y-5 pt-1">
             {registerHighlights.map((item) => (
               <div key={item.title} className="mb-8 flex gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#f0cf86]/12 bg-white/4 text-lg text-[#f0cf86]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#f0cf86]/12 bg-white/4 text-sm font-semibold text-[#f0cf86]">
                   <span>{item.icon}</span>
                 </div>
 
@@ -161,7 +175,7 @@ export const Register = () => {
                 type="password"
                 value={form.password}
                 onChange={handleChange("password")}
-                placeholder="••••••••"
+                placeholder="********"
                 className="h-12 w-full rounded-2xl bg-[#2f302d] px-4 font-serif text-base text-[#9fb0cb] outline-none placeholder:text-[#9fb0cb]"
               />
             </div>
@@ -172,7 +186,7 @@ export const Register = () => {
                 type="password"
                 value={form.confirmPassword}
                 onChange={handleChange("confirmPassword")}
-                placeholder="••••••••"
+                placeholder="********"
                 className="h-12 w-full rounded-2xl bg-[#2f302d] px-4 font-serif text-base text-[#9fb0cb] outline-none placeholder:text-[#9fb0cb]"
               />
             </div>

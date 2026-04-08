@@ -1,22 +1,23 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type ComponentProps } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import useAuth from "../hooks/use-auth";
 
 const loginHighlights = [
   {
     title: "Edit your profile",
-    description: "Add and update internships, research, and experiences",
-    icon: "○",
+    description: "Add and update internships, research, and experiences.",
+    icon: "P",
   },
   {
     title: "Full directory access",
-    description: "Browse every member and alumni profile in the chapter",
-    icon: "◷",
+    description: "Browse every member and alumni profile in the chapter.",
+    icon: "D",
   },
   {
     title: "Chapter resources",
-    description: "Access alumni connections, referrals, and mentorship",
-    icon: "?",
+    description: "Something meanginful and useful will be written here later.",
+    icon: "R",
   },
 ];
 
@@ -27,7 +28,14 @@ type LoginForm = {
 
 export const Login = () => {
   const navigate = useNavigate();
+  const { signIn, isAuthenticated } = useAuth();
   const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/profile");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleChange =
     (field: keyof LoginForm) =>
@@ -35,7 +43,7 @@ export const Login = () => {
       setForm((current) => ({ ...current, [field]: event.target.value }));
     };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit: ComponentProps<"form">["onSubmit"] = async (event) => {
     event.preventDefault();
 
     const email = form.email.trim();
@@ -56,7 +64,13 @@ export const Login = () => {
       return;
     }
 
-    toast.success("Login form looks valid. Connect this to your API next.");
+    try {
+      await signIn(email, password);
+      toast.success("Signed in successfully.");
+      navigate("/profile");
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
 
   return (
@@ -64,7 +78,7 @@ export const Login = () => {
       <div className="flex min-h-full w-1/2 items-center justify-center border-r border-[#f0cf86]/12 bg-[#300811] px-6 py-8">
         <div className="flex max-w-xl flex-col gap-8">
           <div className="rounded-3xl border border-[#f0cf86]/20 bg-[#3a1a0f] px-4 py-2">
-            <h1 className="font-serif text-base text-[#f0cf86]">• MEMBERS ONLY</h1>
+            <h1 className="font-serif text-base text-[#f0cf86]">Members Only</h1>
           </div>
 
           <h1 className="font-serif text-3xl leading-tight text-[#fff8ee]">
@@ -78,7 +92,7 @@ export const Login = () => {
           <div className="space-y-5 pt-1">
             {loginHighlights.map((item) => (
               <div key={item.title} className="mb-6 flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#f0cf86]/12 bg-white/4 text-lg text-[#f0cf86]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#f0cf86]/12 bg-white/4 text-sm font-semibold text-[#f0cf86]">
                   <span>{item.icon}</span>
                 </div>
 
@@ -122,7 +136,7 @@ export const Login = () => {
                 type="password"
                 value={form.password}
                 onChange={handleChange("password")}
-                placeholder="••••••••"
+                placeholder="********"
                 className="h-12 w-full rounded-2xl bg-[#2f302d] px-4 font-serif text-base text-[#9fb0cb] outline-none placeholder:text-[#9fb0cb]"
               />
             </div>
@@ -144,8 +158,8 @@ export const Login = () => {
           <div className="mt-6 rounded-2xl border border-[#e6dccb] bg-white/35 p-5">
             <p className="font-serif text-sm leading-6 text-[#61728f]">
               <span className="mr-3 inline-block h-2.5 w-2.5 rounded-full bg-[#63b37d] align-middle" />
-              <span className="text-[#10244d]">These profiles are public!</span> Anyone can view member profiles and
-              experiences. Signing in is only for editing purposes.
+              <span className="text-[#10244d]">These profiles are public.</span> Anyone can view member profiles and experiences.
+              Signing in is only for editing purposes.
             </p>
           </div>
 
@@ -154,7 +168,7 @@ export const Login = () => {
             <button
               type="button"
               onClick={() => navigate("/register")}
-              className="font-semibold cursor-pointer text-[#10244d] underline underline-offset-4"
+              className="cursor-pointer font-semibold text-[#10244d] underline underline-offset-4"
             >
               Sign up
             </button>

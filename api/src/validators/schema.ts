@@ -19,3 +19,8 @@ export const experienceSchema = z.object({
     endDate: z.string().min(1, "End date is required"),
     description: z.string().optional(),
 });
+
+export const profileUpdateSchema = z.object({
+    major: z.string().trim().min(1, "Major is required"),
+    graduationYear: z.string().trim().min(1, "Graduation year is required"),
+});
