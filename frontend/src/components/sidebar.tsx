@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 export const Sidebar = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-row border-b border-[#f0cf86]/18 bg-[#300811] py-4">
       <div className="flex w-full gap-3 px-6">
@@ -16,10 +20,10 @@ export const Sidebar = () => {
         <div className="min-w-25 cursor-pointer whitespace-nowrap rounded-xl border border-[#f0cf86]/22 bg-white/6 p-2 text-center transition hover:bg-[#571120]">
           Directory
         </div>
-        <div className="min-w-25 cursor-pointer whitespace-nowrap rounded-xl border border-[#f0cf86]/22 bg-white/6 p-2 text-center transition hover:bg-[#571120]">
+        <div onClick={() => navigate("/login")} className="min-w-25 cursor-pointer whitespace-nowrap rounded-xl border border-[#f0cf86]/22 bg-white/6 p-2 text-center transition hover:bg-[#571120]">
           Sign in
         </div>
-        <div className="min-w-25 cursor-pointer whitespace-nowrap rounded-xl border border-[#f0cf86]/70 bg-[#f0cf86] p-2 text-center text-[#300811] transition hover:bg-[#f6dc9d]">
+        <div onClick={() => navigate("/register")} className="min-w-25 cursor-pointer whitespace-nowrap rounded-xl border border-[#f0cf86]/70 bg-[#f0cf86] p-2 text-center text-[#300811] transition hover:bg-[#f6dc9d]">
           Join
         </div>
       </div>

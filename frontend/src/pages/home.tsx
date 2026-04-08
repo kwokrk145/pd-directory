@@ -2,13 +2,13 @@ import { useState } from "react";
 import Card from "../components/card";
 
 const unis = [
-  { name: "MIT", number: "14", initials: "MIT", label: "Members" },
-  { name: "Stanford", number: "11", initials: "ST", label: "Members" },
-  { name: "Harvard", number: "9", initials: "HA", label: "Members" },
-  { name: "UPenn", number: "7", initials: "UP", label: "Members" },
-  { name: "UCSF", number: "5", initials: "UC", label: "Members" },
-  { name: "UT Austin", number: "8", initials: "UA", label: "Members" },
-  { name: "Northwestern", number: "6", initials: "NO", label: "Members" },
+  { name: "Massachusetts Institute of Technology", number: "14", initials: "MIT", label: "Members" },
+  { name: "Stanford University", number: "11", initials: "ST", label: "Members" },
+  { name: "Harvard University", number: "9", initials: "HA", label: "Members" },
+  { name: "University of Pennsylvania", number: "7", initials: "UP", label: "Members" },
+  { name: "University of California, San Francisco", number: "5", initials: "UC", label: "Members" },
+  { name: "University of Texas at Austin", number: "8", initials: "UT", label: "Members" },
+  { name: "Northwestern", number: "6", initials: "NU", label: "Members" },
   { name: "Georgia Tech", number: "10", initials: "GT", label: "Members" },
 ];
 
@@ -20,7 +20,7 @@ const companies = [
   { name: "Honda", number: "4", initials: "HO", label: "Members" },
   { name: "Applied Materials", number: "5", initials: "AM", label: "Members" },
   { name: "Johnson & Johnson", number: "7", initials: "J&J", label: "Members" },
-  { name: "Gongcha", number: "Diana Phan", initials: "G", label: "Members" },
+  { name: "Gongcha", number: "1", initials: "G", label: "Members" },
 ];
 
 export const Home = () => {
@@ -88,7 +88,7 @@ export const Home = () => {
         </div>
 
       </section>
-      <section className="bg-[#300811] px-62 flex flex-col h-[110vh] gap-4 items-start justify-center">
+      <section className="bg-[#300811] px-84 flex flex-col h-[110vh] gap-4 items-start justify-center">
         <h1 className="text-lg font-serif text-[#f0cf86]">
             ALUMNI NETWORK
         </h1>
