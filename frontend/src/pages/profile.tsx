@@ -36,6 +36,8 @@ type ExperienceForm = {
   description: string;
 };
 
+type ProfileTab = "experiences" | "settings";
+
 const emptyForm: ExperienceForm = {
   title: "",
   organization: "",
@@ -126,6 +128,8 @@ export const Profile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingExperienceId, setEditingExperienceId] = useState<Id<"experiences"> | null>(null);
   const [isDeletingId, setIsDeletingId] = useState<Id<"experiences"> | null>(null);
+  const [isExperienceDialogOpen, setIsExperienceDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<ProfileTab>("experiences");
   const [profileForm, setProfileForm] = useState({ major: "", graduationYear: "" });
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
@@ -182,9 +186,24 @@ export const Profile = () => {
     setEditingExperienceId(null);
   };
 
+  const openAddExperienceDialog = () => {
+    resetForm();
+    setIsExperienceDialogOpen(true);
+  };
+
+  const closeExperienceDialog = () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsExperienceDialogOpen(false);
+    resetForm();
+  };
+
   const handleEdit = (experience: Experience) => {
     setEditingExperienceId(experience.id as Id<"experiences">);
     setForm(getFormFromExperience(experience));
+    setIsExperienceDialogOpen(true);
   };
 
   const handleDelete = async (experienceId: Id<"experiences">) => {
@@ -249,6 +268,7 @@ export const Profile = () => {
 
       await refreshUser();
       resetForm();
+      setIsExperienceDialogOpen(false);
     } catch (error) {
       const prefix = editingExperienceId !== null ? "Update experience failed: " : "Add experience failed: ";
       toast.error(prefix + (error as Error).message);
@@ -323,16 +343,51 @@ export const Profile = () => {
         </div>
       </section>
 
-      <div className="mx-auto grid max-w-6xl items-start gap-8 px-12 py-12 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="mx-auto max-w-6xl px-12 py-12">
+        <div className="mb-8 flex gap-3 rounded-[24px] border border-[#e5dac8] bg-white p-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab("experiences")}
+            className={`h-12 flex-1 rounded-2xl text-sm font-medium transition ${
+              activeTab === "experiences"
+                ? "bg-[#300811] text-[#fff8ee]"
+                : "text-[#5f7191] hover:bg-[#fbfaf7]"
+            }`}
+          >
+            Experiences
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("settings")}
+            className={`h-12 flex-1 rounded-2xl text-sm font-medium transition ${
+              activeTab === "settings"
+                ? "bg-[#300811] text-[#fff8ee]"
+                : "text-[#5f7191] hover:bg-[#fbfaf7]"
+            }`}
+          >
+            Profile Settings
+          </button>
+        </div>
+
+        {activeTab === "experiences" ? (
         <section className="rounded-[28px] border border-[#e5dac8] bg-white p-8">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm uppercase tracking-[0.18em] text-[#61728f]">Your Experiences</p>
               <h2 className="mt-3 font-serif text-2xl text-[#10244d]">Experience</h2>
             </div>
-            <span className="rounded-xl bg-[#f8f3e7] px-4 py-2 text-sm text-[#8f6710]">
-              {sortedExperiences.length} entries
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="rounded-xl bg-[#f8f3e7] px-4 py-2 text-sm text-[#8f6710]">
+                {sortedExperiences.length} entries
+              </span>
+              <button
+                type="button"
+                onClick={openAddExperienceDialog}
+                className="h-11 rounded-xl bg-[#300811] px-5 text-sm font-medium text-[#fff8ee] transition hover:bg-[#571120]"
+              >
+                Add experience
+              </button>
+            </div>
           </div>
 
           {sortedExperiences.length > 0 ? (
@@ -374,54 +429,103 @@ export const Profile = () => {
             </div>
           )}
         </section>
-
-        <aside className="sticky top-6 self-start space-y-6">
-          <div className="rounded-[28px] border border-[#e5dac8] bg-white p-8">
-            <p className="text-sm uppercase tracking-[0.18em] text-[#61728f]">Academic Details</p>
-            <h2 className="mt-3 font-serif text-2xl text-[#10244d]">Major and graduation year</h2>
-            <form className="mt-6 space-y-5" onSubmit={handleProfileSubmit}>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-[#5e6f8d]">Major</label>
-                <input
-                  type="text"
-                  value={profileForm.major}
-                  onChange={handleProfileChange("major")}
-                  placeholder="Computer Science"
-                  className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-[#fbfaf7] px-4 text-base text-[#10244d] outline-none placeholder:text-[#8a97ad]"
-                />
+        ) : (
+          <section className="rounded-[28px] border border-[#e5dac8] bg-white px-8 py-10">
+            <div className="mx-auto max-w-3xl">
+              <div className="text-center">
+                <p className="text-sm uppercase tracking-[0.18em] text-[#61728f]">Profile Settings</p>
+                <h2 className="mt-3 font-serif text-3xl text-[#10244d]">Academic details</h2>
+                <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#5f7191]">
+                  Keep your major and graduation year current for the member directory.
+                </p>
               </div>
 
+              <div className="mx-auto mt-8 max-w-2xl rounded-[24px] border border-[#e8dfd1] bg-[#fffdf9] p-6">
+                <div className="mb-6 flex items-center gap-4 border-b border-[#eee4d8] pb-6">
+                  <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-xl font-medium ${accentClass}`}>
+                    {initials}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-lg font-semibold text-[#10244d]">
+                      {user.firstName} {user.lastName}
+                    </p>
+                    <p className="truncate text-sm text-[#61728f]">{user.email}</p>
+                  </div>
+                </div>
+
+                <form className="space-y-5" onSubmit={handleProfileSubmit}>
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-[#5e6f8d]">Major</label>
+                      <input
+                        type="text"
+                        value={profileForm.major}
+                        onChange={handleProfileChange("major")}
+                        placeholder="Computer Science"
+                        className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-white px-4 text-base text-[#10244d] outline-none placeholder:text-[#8a97ad]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-[#5e6f8d]">Graduation year</label>
+                      <input
+                        type="text"
+                        value={profileForm.graduationYear}
+                        onChange={handleProfileChange("graduationYear")}
+                        placeholder="2026"
+                        className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-white px-4 text-base text-[#10244d] outline-none placeholder:text-[#8a97ad]"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSavingProfile}
+                    className="h-12 w-full rounded-2xl bg-[#300811] text-sm font-medium text-[#fff8ee] transition hover:bg-[#571120] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isSavingProfile ? "Saving..." : "Save academic details"}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </section>
+        )}
+      </div>
+
+      {isExperienceDialogOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 py-8"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="experience-dialog-title"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeExperienceDialog();
+            }
+          }}
+        >
+          <div className="max-h-full w-full max-w-2xl overflow-y-auto rounded-[24px] border border-[#e5dac8] bg-white p-8 shadow-2xl">
+            <div className="flex items-start justify-between gap-5">
               <div>
-                <label className="mb-2 block text-sm font-medium text-[#5e6f8d]">Graduation year</label>
-                <input
-                  type="text"
-                  value={profileForm.graduationYear}
-                  onChange={handleProfileChange("graduationYear")}
-                  placeholder="2026"
-                  className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-[#fbfaf7] px-4 text-base text-[#10244d] outline-none placeholder:text-[#8a97ad]"
-                />
+                <p className="text-sm uppercase tracking-[0.18em] text-[#61728f]">
+                  {editingExperienceId !== null ? "Edit Experience" : "Add Experience"}
+                </p>
+                <h2 id="experience-dialog-title" className="mt-3 font-serif text-2xl text-[#10244d]">
+                  {editingExperienceId !== null ? "Update role or project" : "New role or project"}
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-[#5f7191]">
+                  Add an internship, research role, leadership position, or club project. Use Present if you are still in the role.
+                </p>
               </div>
 
               <button
-                type="submit"
-                disabled={isSavingProfile}
-                className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-[#f7f2eb] text-sm font-medium text-[#10244d] transition hover:bg-[#efe8dd] disabled:cursor-not-allowed disabled:opacity-60"
+                type="button"
+                onClick={closeExperienceDialog}
+                className="h-10 rounded-xl border border-[#ddd4c6] px-4 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
               >
-                {isSavingProfile ? "Saving..." : "Save academic details"}
+                Close
               </button>
-            </form>
-          </div>
-
-          <div className="rounded-[28px] border border-[#e5dac8] bg-white p-8">
-            <p className="text-sm uppercase tracking-[0.18em] text-[#61728f]">
-              {editingExperienceId !== null ? "Edit Experience" : "Add Experience"}
-            </p>
-            <h2 className="mt-3 font-serif text-2xl text-[#10244d]">
-              {editingExperienceId !== null ? "Update role or project" : "New role or project"}
-            </h2>
-            <p className="mt-3 text-sm leading-7 text-[#5f7191]">
-              Add an internship, research role, leadership position, or club project. Use Present if you are still in the role.
-            </p>
+            </div>
 
             <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
               <div>
@@ -546,20 +650,18 @@ export const Profile = () => {
                   {isSubmitting ? "Saving..." : editingExperienceId !== null ? "Save changes" : "Add experience"}
                 </button>
 
-                {editingExperienceId !== null ? (
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="h-12 rounded-2xl border border-[#ddd4c6] px-5 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
-                  >
-                    Cancel
-                  </button>
-                ) : null}
+                <button
+                  type="button"
+                  onClick={closeExperienceDialog}
+                  className="h-12 rounded-2xl border border-[#ddd4c6] px-5 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </div>
-        </aside>
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 };
