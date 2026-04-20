@@ -8,6 +8,7 @@ import Register from "./pages/register";
 import Directory from "./pages/directory";
 import Profile from "./pages/profile";
 import UserProfile from "./pages/user-profile";
+import MemberAdmin from "./pages/member-admin";
 
 function App() {
   const location = useLocation();
@@ -23,6 +24,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/directory" element={<Directory />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/members/admin" element={<MemberAdmin />} />
           <Route path="/users/:id" element={<UserProfile />} />
         </Routes>
       </main>

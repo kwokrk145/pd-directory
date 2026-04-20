@@ -45,6 +45,12 @@ export const Sidebar = () => {
               Profile
             </div>
             <div
+              onClick={() => navigate("/members/admin")}
+              className="min-w-25 cursor-pointer whitespace-nowrap rounded-xl border border-[#f0cf86]/22 bg-white/6 p-2 text-center transition hover:bg-[#571120]"
+            >
+              Members
+            </div>
+            <div
               onClick={handleLogout}
               className="min-w-25 cursor-pointer whitespace-nowrap rounded-xl border border-[#f0cf86]/70 bg-[#f0cf86] p-2 text-center text-[#300811] transition hover:bg-[#f6dc9d]"
             >

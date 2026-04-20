@@ -31,5 +31,7 @@ export default defineSchema({
     firstName: v.string(),
     lastName: v.string(),
     role: v.number(),
-  }).index("by_identity", ["firstName", "lastName", "role"]),
+  })
+    .index("by_identity", ["firstName", "lastName", "role"])
+    .index("by_role", ["role"]),
 });
