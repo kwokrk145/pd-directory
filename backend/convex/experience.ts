@@ -1,3 +1,4 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
 import { mutation } from "./_generated/server";
 
@@ -26,7 +27,6 @@ function validateExperience(args: {
 
 export const create = mutation({
   args: {
-    userId: v.id("users"),
     title: v.string(),
     organization: v.string(),
     startDate: v.string(),
@@ -34,16 +34,16 @@ export const create = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.db.get(args.userId);
+    const userId = await getAuthUserId(ctx);
 
-    if (!user) {
+    if (!userId) {
       throw new ConvexError("Unauthorized");
     }
 
     validateExperience(args);
 
     const experienceId = await ctx.db.insert("experiences", {
-      userId: args.userId,
+      userId,
       title: args.title.trim(),
       organization: args.organization.trim(),
       startDate: args.startDate.trim(),
@@ -63,7 +63,6 @@ export const create = mutation({
 
 export const update = mutation({
   args: {
-    userId: v.id("users"),
     experienceId: v.id("experiences"),
     title: v.string(),
     organization: v.string(),
@@ -75,8 +74,13 @@ export const update = mutation({
     validateExperience(args);
 
     const experience = await ctx.db.get(args.experienceId);
+    const userId = await getAuthUserId(ctx);
 
-    if (!experience || experience.userId !== args.userId) {
+    if (!userId) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    if (!experience || experience.userId !== userId) {
       throw new ConvexError("Experience not found");
     }
 
@@ -100,13 +104,17 @@ export const update = mutation({
 
 export const remove = mutation({
   args: {
-    userId: v.id("users"),
     experienceId: v.id("experiences"),
   },
   handler: async (ctx, args) => {
     const experience = await ctx.db.get(args.experienceId);
+    const userId = await getAuthUserId(ctx);
 
-    if (!experience || experience.userId !== args.userId) {
+    if (!userId) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    if (!experience || experience.userId !== userId) {
       throw new ConvexError("Experience not found");
     }
 

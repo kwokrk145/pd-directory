@@ -8,8 +8,9 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
 import type * as experience from "../experience.js";
-import type * as internalUsers from "../internalUsers.js";
+import type * as http from "../http.js";
 import type * as users from "../users.js";
 
 import type {
@@ -19,8 +20,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   experience: typeof experience;
-  internalUsers: typeof internalUsers;
+  http: typeof http;
   users: typeof users;
 }>;
 
