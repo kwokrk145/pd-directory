@@ -20,4 +20,10 @@ export default defineSchema({
     endDate: v.string(),
     description: v.optional(v.string()),
   }).index("by_user", ["userId"]),
+
+  members: defineTable({
+    firstName: v.string(),
+    lastName: v.string(),
+    role: v.string(),
+  })
 });
