@@ -7,6 +7,7 @@ export const createRegisteredUser = internalMutation({
     lastName: v.string(),
     email: v.string(),
     passwordHash: v.string(),
+    role: v.number(),
   },
   handler: async (ctx, args) => {
     const existingUser = await ctx.db
@@ -18,12 +19,21 @@ export const createRegisteredUser = internalMutation({
       throw new ConvexError("User already exists");
     }
 
+    const existingRole = await ctx.db
+      .query("users")
+      .withIndex("by_role", (q) => q.eq("role", args.role))
+      .unique();
+
+    if (existingRole) {
+      throw new ConvexError("Member account already exists");
+    }
+
     const userId = await ctx.db.insert("users", {
       email: args.email,
       firstName: args.firstName,
       lastName: args.lastName,
       passwordHash: args.passwordHash,
-      role: 0,
+      role: args.role,
     });
 
     const user = await ctx.db.get(userId);
@@ -33,6 +43,22 @@ export const createRegisteredUser = internalMutation({
     }
 
     return user;
+  },
+});
+
+export const getMatchingMember = internalQuery({
+  args: {
+    firstName: v.string(),
+    lastName: v.string(),
+    role: v.number(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("members")
+      .withIndex("by_identity", (q) =>
+        q.eq("firstName", args.firstName).eq("lastName", args.lastName).eq("role", args.role),
+      )
+      .unique();
   },
 });
 

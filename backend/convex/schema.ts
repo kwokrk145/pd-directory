@@ -10,7 +10,9 @@ export default defineSchema({
     role: v.number(),
     major: v.optional(v.string()),
     graduationYear: v.optional(v.string()),
-  }).index("by_email", ["email"]),
+  })
+    .index("by_email", ["email"])
+    .index("by_role", ["role"]),
 
   experiences: defineTable({
     userId: v.id("users"),
@@ -24,6 +26,6 @@ export default defineSchema({
   members: defineTable({
     firstName: v.string(),
     lastName: v.string(),
-    role: v.string(),
-  })
+    role: v.number(),
+  }).index("by_identity", ["firstName", "lastName", "role"]),
 });

@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as experience from "../experience.js";
 import type * as internalUsers from "../internalUsers.js";
 import type * as users from "../users.js";
 
@@ -18,6 +19,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  experience: typeof experience;
   internalUsers: typeof internalUsers;
   users: typeof users;
 }>;

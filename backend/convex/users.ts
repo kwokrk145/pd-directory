@@ -25,8 +25,20 @@ const createRegisteredUser = makeFunctionReference("internalUsers:createRegister
     lastName: string;
     email: string;
     passwordHash: string;
+    role: number;
   },
   Doc<"users">
+>;
+
+const getMatchingMember = makeFunctionReference("internalUsers:getMatchingMember") as unknown as FunctionReference<
+  "query",
+  "internal",
+  {
+    firstName: string;
+    lastName: string;
+    role: number;
+  },
+  Doc<"members"> | null
 >;
 
 const getPrivateUserByEmail = makeFunctionReference("internalUsers:getPrivateUserByEmail") as unknown as FunctionReference<
@@ -146,11 +158,13 @@ export const register = action({
     lastName: v.string(),
     email: v.string(),
     password: v.string(),
+    role: v.number(),
   },
   handler: async (ctx, args): Promise<PublicUser> => {
     const firstName = args.firstName.trim();
     const lastName = args.lastName.trim();
     const email = normalizeEmail(args.email);
+    const role = args.role;
 
     if (!firstName) {
       throw new ConvexError("First name is required");
@@ -168,12 +182,23 @@ export const register = action({
       throw new ConvexError("Password must be at least 6 characters long");
     }
 
+    const member = await ctx.runQuery(getMatchingMember, {
+      firstName,
+      lastName,
+      role,
+    });
+
+    if (!member) {
+      throw new ConvexError("Name and role number do not match an approved member");
+    }
+
     const passwordHash = await hashPassword(args.password);
     const user = await ctx.runMutation(createRegisteredUser, {
       firstName,
       lastName,
       email,
       passwordHash,
+      role,
     });
 
     return toPublicUser(user);
