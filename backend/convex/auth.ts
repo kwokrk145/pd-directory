@@ -2,6 +2,7 @@ import { Password } from "@convex-dev/auth/providers/Password";
 import { convexAuth } from "@convex-dev/auth/server";
 import { ConvexError } from "convex/values";
 import type { DataModel } from "./_generated/dataModel";
+import type { MutationCtx } from "./_generated/server";
 
 const SESSION_DURATION_MS = 30 * 60 * 1000;
 
@@ -81,12 +82,13 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         return args.existingUserId;
       }
 
+      const appCtx = ctx as unknown as MutationCtx;
       const email = normalizeEmail(args.profile.email);
       const firstName = requiredString(args.profile.firstName, "First name is required");
       const lastName = requiredString(args.profile.lastName, "Last name is required");
       const role = parseRole(args.profile.role);
 
-      const member = await ctx.db
+      const member = await appCtx.db
         .query("members")
         .withIndex("by_identity", (q) =>
           q.eq("firstName", firstName).eq("lastName", lastName).eq("role", role),
@@ -97,7 +99,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         throw new ConvexError("Name and role number do not match an approved member");
       }
 
-      const existingRole = await ctx.db
+      const existingRole = await appCtx.db
         .query("users")
         .withIndex("by_role", (q) => q.eq("role", role))
         .unique();
@@ -106,7 +108,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         throw new ConvexError("Member account already exists");
       }
 
-      return await ctx.db.insert("users", {
+      return await appCtx.db.insert("users", {
         email,
         name: `${firstName} ${lastName}`,
         firstName,

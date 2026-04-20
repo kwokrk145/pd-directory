@@ -9,7 +9,6 @@ export default defineSchema({
     name: v.optional(v.string()),
     image: v.optional(v.string()),
     email: v.optional(v.string()),
-    isAnonymous: v.optional(v.boolean()),
     firstName: v.optional(v.string()),
     lastName: v.optional(v.string()),
     role: v.optional(v.number()),
