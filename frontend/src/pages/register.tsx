@@ -24,6 +24,7 @@ const registerHighlights = [
 type RegisterForm = {
   firstName: string;
   lastName: string;
+  role: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -35,6 +36,7 @@ export const Register = () => {
   const [form, setForm] = useState<RegisterForm>({
     firstName: "",
     lastName: "",
+    role: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -57,12 +59,18 @@ export const Register = () => {
 
     const firstName = form.firstName.trim();
     const lastName = form.lastName.trim();
+    const role = Number(form.role.trim());
     const email = form.email.trim();
     const password = form.password.trim();
     const confirmPassword = form.confirmPassword.trim();
 
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !form.role.trim() || !email || !password || !confirmPassword) {
       toast.error("Complete every field before creating your account.");
+      return;
+    }
+
+    if (!Number.isInteger(role)) {
+      toast.error("Enter your role number.");
       return;
     }
 
@@ -82,7 +90,7 @@ export const Register = () => {
     }
 
     try {
-      await signUp(firstName, lastName, email, password);
+      await signUp(firstName, lastName, email, password, role);
       toast.success("Account created successfully.");
       navigate("/profile");
     } catch (error) {
@@ -156,6 +164,17 @@ export const Register = () => {
                   className="h-12 w-full rounded-2xl bg-[#2f302d] px-4 font-serif text-base text-[#9fb0cb] outline-none placeholder:text-[#9fb0cb]"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block font-serif text-base font-medium text-[#5e6f8d]">Role number</label>
+              <input
+                type="number"
+                value={form.role}
+                onChange={handleChange("role")}
+                placeholder="123"
+                className="h-12 w-full rounded-2xl bg-[#2f302d] px-4 font-serif text-base text-[#9fb0cb] outline-none placeholder:text-[#9fb0cb]"
+              />
             </div>
 
             <div>

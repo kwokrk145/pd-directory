@@ -9,6 +9,13 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@convex-api": path.resolve(__dirname, "../backend/convex/_generated/api"),
+      "@convex-data": path.resolve(__dirname, "../backend/convex/_generated/dataModel"),
+    },
+  },
+  server: {
+    fs: {
+      allow: [path.resolve(__dirname, "..")],
     },
   },
   // everything above this line until plugins is new

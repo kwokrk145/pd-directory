@@ -1,20 +1,21 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
-import { getUserProfile, login as loginRequest, logout as logoutRequest, register as registerRequest } from "../lib/api";
+import { createContext, useCallback, useMemo, type ReactNode } from "react";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useConvexAuth, useQuery } from "convex/react";
+import { api } from "@convex-api";
 import type { UserType } from "../lib/types";
 
 export type AuthContextValue = {
   user: UserType | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<UserType>;
-  signUp: (firstName: string, lastName: string, email: string, password: string) => Promise<UserType>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    role: number,
+  ) => Promise<void>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
 };
@@ -22,52 +23,68 @@ export type AuthContextValue = {
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<UserType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { signIn: convexSignIn, signOut: convexSignOut } = useAuthActions();
+  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth();
+  const profile = useQuery(api.users.me, isAuthenticated ? {} : "skip");
 
-  const refreshUser = useCallback(async () => {
-    try {
-      const profile = await getUserProfile();
-      setUser(profile);
-    } catch {
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      await convexSignIn("password", {
+        email,
+        password,
+        flow: "signIn",
+      });
+    },
+    [convexSignIn],
+  );
 
-  useEffect(() => {
-    void refreshUser();
-  }, [refreshUser]);
-
-  const signIn = useCallback(async (email: string, password: string) => {
-    const loggedInUser = await loginRequest(email, password);
-    setUser(loggedInUser);
-    return loggedInUser;
-  }, []);
-
-  const signUp = useCallback(async (firstName: string, lastName: string, email: string, password: string) => {
-    const registeredUser = await registerRequest(firstName, lastName, email, password);
-    setUser(registeredUser);
-    return registeredUser;
-  }, []);
+  const signUp = useCallback(
+    async (firstName: string, lastName: string, email: string, password: string, role: number) => {
+      await convexSignIn("password", {
+        firstName,
+        lastName,
+        email,
+        password,
+        role,
+        flow: "signUp",
+      });
+    },
+    [convexSignIn],
+  );
 
   const signOut = useCallback(async () => {
-    await logoutRequest();
-    setUser(null);
+    await convexSignOut();
+  }, [convexSignOut]);
+
+  const refreshUser = useCallback(async () => {
+    // Convex queries are reactive, so this is kept for existing callers.
   }, []);
+
+  const isProfileLoading = isAuthenticated && profile === undefined;
+  const user: UserType | null = profile
+    ? {
+        ...profile,
+        firstName: profile.firstName ?? "",
+        lastName: profile.lastName ?? "",
+        email: profile.email ?? "",
+        experiences: profile.experiences?.map((experience) => ({
+          ...experience,
+          id: experience._id,
+        })),
+      }
+    : null;
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
-      isAuthenticated: user !== null,
-      isLoading,
+      isAuthenticated: isAuthenticated && user !== null,
+      isLoading: isAuthLoading || isProfileLoading,
       signIn,
       signUp,
       signOut,
       refreshUser,
     }),
-    [user, isLoading, signIn, signUp, signOut, refreshUser]
+    [user, isAuthenticated, isAuthLoading, isProfileLoading, signIn, signUp, signOut, refreshUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

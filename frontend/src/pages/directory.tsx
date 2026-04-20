@@ -1,29 +1,28 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "convex/react";
+import { api } from "@convex-api";
 import ProfileCard from "../components/profilecard";
-import { getAllUsers } from "../lib/api";
 import type { UserType } from "../lib/types";
 
 export const Directory = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<UserType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const data = await getAllUsers();
-        setUsers(data);
-      } catch (loadError) {
-        setError((loadError as Error).message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadUsers();
-  }, []);
+  const data = useQuery(api.users.list);
+  const isLoading = data === undefined;
+  const users = useMemo<UserType[]>(
+    () =>
+      (data ?? []).map((user) => ({
+        ...user,
+        firstName: user.firstName ?? "",
+        lastName: user.lastName ?? "",
+        email: user.email ?? "",
+        experiences: user.experiences?.map((experience) => ({
+          ...experience,
+          id: experience._id,
+        })),
+      })),
+    [data],
+  );
 
   return (
     <div className="min-h-full w-full bg-[#f7f2eb] text-[#10244d]">
@@ -61,8 +60,6 @@ export const Directory = () => {
       <section className="px-16 py-14">
         <div className="mx-auto max-w-7xl">
           <p className="text-lg text-[#61728f]">{isLoading ? "Loading members..." : `Showing ${users.length} members`}</p>
-
-          {error ? <p className="mt-6 text-lg text-rose-700">{error}</p> : null}
 
           <div className="mt-10 grid grid-cols-3 gap-6">
             {!isLoading &&

@@ -1,36 +1,32 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getUserById } from "../lib/api";
+import { useQuery } from "convex/react";
+import { api } from "@convex-api";
+import type { Id } from "@convex-data";
 import { getMemberMeta } from "../lib/member-meta";
 import type { UserType } from "../lib/types";
 
 export const UserProfile = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [user, setUser] = useState<UserType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const loadUser = async () => {
-      if (!id) {
-        setError("Missing user id.");
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const data = await getUserById(Number(id));
-        setUser(data);
-      } catch (loadError) {
-        setError((loadError as Error).message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadUser();
-  }, [id]);
+  const data = useQuery(api.users.get, id ? { userId: id as Id<"users"> } : "skip");
+  const isLoading = Boolean(id) && data === undefined;
+  const user = useMemo<UserType | null>(
+    () =>
+      data
+        ? {
+            ...data,
+            firstName: data.firstName ?? "",
+            lastName: data.lastName ?? "",
+            email: data.email ?? "",
+            experiences: data.experiences?.map((experience) => ({
+              ...experience,
+              id: experience._id,
+            })),
+          }
+        : null,
+    [data],
+  );
 
   if (isLoading) {
     return (
@@ -40,11 +36,11 @@ export const UserProfile = () => {
     );
   }
 
-  if (error || !user) {
+  if (!id || !user) {
     return (
       <div className="flex min-h-full w-full items-center justify-center bg-[#f7f2eb] text-[#10244d]">
         <div className="space-y-4 text-center">
-          <p className="text-lg text-rose-700">{error || "User not found."}</p>
+          <p className="text-lg text-rose-700">{!id ? "Missing user id." : "User not found."}</p>
           <button
             type="button"
             onClick={() => navigate("/directory")}

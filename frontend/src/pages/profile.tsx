@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type ComponentProps } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useMutation } from "convex/react";
+import { api } from "@convex-api";
+import type { Id } from "@convex-data";
 import useAuth from "../hooks/use-auth";
-import { createExperience, deleteExperience, updateExperience, updateProfile } from "../lib/api";
 import { getMemberMeta } from "../lib/member-meta";
 import type { Experience } from "../lib/types";
 
@@ -116,10 +118,14 @@ const validateDates = (
 export const Profile = () => {
   const navigate = useNavigate();
   const { user, isLoading, isAuthenticated, refreshUser } = useAuth();
+  const createExperience = useMutation(api.experience.create);
+  const updateExperience = useMutation(api.experience.update);
+  const deleteExperience = useMutation(api.experience.remove);
+  const updateProfile = useMutation(api.users.updateMe);
   const [form, setForm] = useState<ExperienceForm>(emptyForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingExperienceId, setEditingExperienceId] = useState<number | null>(null);
-  const [isDeletingId, setIsDeletingId] = useState<number | null>(null);
+  const [editingExperienceId, setEditingExperienceId] = useState<Id<"experiences"> | null>(null);
+  const [isDeletingId, setIsDeletingId] = useState<Id<"experiences"> | null>(null);
   const [profileForm, setProfileForm] = useState({ major: "", graduationYear: "" });
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
@@ -139,7 +145,7 @@ export const Profile = () => {
   }, [user]);
 
   const sortedExperiences = useMemo(
-    () => [...(user?.experiences ?? [])].sort((a, b) => b.id - a.id),
+    () => [...(user?.experiences ?? [])].sort((a, b) => (b._creationTime ?? 0) - (a._creationTime ?? 0)),
     [user?.experiences]
   );
 
@@ -177,15 +183,15 @@ export const Profile = () => {
   };
 
   const handleEdit = (experience: Experience) => {
-    setEditingExperienceId(experience.id);
+    setEditingExperienceId(experience.id as Id<"experiences">);
     setForm(getFormFromExperience(experience));
   };
 
-  const handleDelete = async (experienceId: number) => {
+  const handleDelete = async (experienceId: Id<"experiences">) => {
     setIsDeletingId(experienceId);
 
     try {
-      await deleteExperience(experienceId);
+      await deleteExperience({ experienceId });
       await refreshUser();
       if (editingExperienceId === experienceId) {
         resetForm();
@@ -221,10 +227,23 @@ export const Profile = () => {
 
     try {
       if (editingExperienceId !== null) {
-        await updateExperience(editingExperienceId, title, organization, startDate, endDate, description || undefined);
+        await updateExperience({
+          experienceId: editingExperienceId,
+          title,
+          organization,
+          startDate,
+          endDate,
+          description: description || undefined,
+        });
         toast.success("Experience updated successfully!");
       } else {
-        await createExperience(title, organization, startDate, endDate, description || undefined);
+        await createExperience({
+          title,
+          organization,
+          startDate,
+          endDate,
+          description: description || undefined,
+        });
         toast.success("Experience added successfully!");
       }
 
@@ -252,7 +271,7 @@ export const Profile = () => {
     setIsSavingProfile(true);
 
     try {
-      await updateProfile(major, graduationYear);
+      await updateProfile({ major, graduationYear });
       await refreshUser();
       toast.success("Profile details updated.");
     } catch (error) {
@@ -340,7 +359,7 @@ export const Profile = () => {
                     <button
                       type="button"
                       disabled={isDeletingId === experience.id}
-                      onClick={() => handleDelete(experience.id)}
+                      onClick={() => handleDelete(experience.id as Id<"experiences">)}
                       className="rounded-xl border border-[#ead6d1] px-4 py-2 text-sm text-[#9b4b43] transition hover:bg-[#fff5f2] disabled:opacity-60"
                     >
                       {isDeletingId === experience.id ? "Deleting..." : "Delete"}

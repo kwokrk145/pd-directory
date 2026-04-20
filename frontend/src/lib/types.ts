@@ -24,13 +24,16 @@ export type UserType = {
   lastName: string;
   username?: string;
   email: string;
+  role?: number;
   experiences?: Experience[];
   major?: string;
   graduationYear?: string;
 };
 
 export type Experience = {
-    id: number;
+    id: string;
+    _id?: string;
+    _creationTime?: number;
     title: string;
     organization: string;
     startDate: string;

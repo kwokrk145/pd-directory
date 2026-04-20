@@ -53,7 +53,19 @@ export const list = query({
   handler: async (ctx) => {
     const users = await ctx.db.query("users").collect();
 
-    return users.map(toPublicUser);
+    return await Promise.all(
+      users.map(async (user) => {
+        const experiences = await ctx.db
+          .query("experiences")
+          .withIndex("by_user", (q) => q.eq("userId", user._id))
+          .collect();
+
+        return {
+          ...toPublicUser(user),
+          experiences,
+        };
+      }),
+    );
   },
 });
 
