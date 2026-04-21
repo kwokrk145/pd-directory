@@ -103,7 +103,7 @@ export const Home = () => {
             ALUMNI NETWORK
         </h1>
         <h1 className="text-4xl font-serif font-white text-[#fff8ee]">
-            Our brothers have go on to -
+            Our brothers have gone on to -
         </h1>
         <h1 className="text-lg text-[#e2c8b1] font-serif">
             From leading companies to top PhD programs, Theta Tau members are everywhere!
