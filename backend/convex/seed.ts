@@ -333,3 +333,44 @@ export const seedDirectory = internalMutation({
     };
   },
 });
+
+export const clearSeedDirectory = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const seededRoles = new Set<number>([
+      ...seedUsers.map((user) => user.role),
+      ...approvedOnlyMembers.map((member) => member.role),
+    ]);
+
+    const users = await ctx.db.query("users").collect();
+    const seededUsers = users.filter((user) => user.role !== undefined && seededRoles.has(user.role));
+    const seededUserIds = new Set(seededUsers.map((user) => user._id));
+
+    const experiences = await ctx.db.query("experiences").collect();
+    const seededExperiences = experiences.filter((experience) => seededUserIds.has(experience.userId));
+
+    for (const experience of seededExperiences) {
+      await ctx.db.delete(experience._id);
+    }
+
+    for (const user of seededUsers) {
+      await ctx.db.delete(user._id);
+    }
+
+    const members = await ctx.db.query("members").collect();
+    const seededMembers = members.filter((member) => seededRoles.has(member.role));
+
+    for (const member of seededMembers) {
+      await ctx.db.delete(member._id);
+    }
+
+    return {
+      scopedRoles: [...seededRoles].sort((a, b) => a - b),
+      deleted: {
+        experiences: seededExperiences.length,
+        users: seededUsers.length,
+        members: seededMembers.length,
+      },
+    };
+  },
+});

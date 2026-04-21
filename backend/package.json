@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "clear-seed": "node scripts/clear-seed.mjs",
     "seed": "node scripts/seed.mjs",
     "seed:no-reset": "node scripts/seed.mjs --no-reset",
     "test": "echo \"Error: no test specified\" && exit 1"
