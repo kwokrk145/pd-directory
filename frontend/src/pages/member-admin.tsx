@@ -1,4 +1,5 @@
 import { useMemo, useState, type ChangeEvent, type ComponentProps } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { api } from "@convex-api";
@@ -44,14 +45,20 @@ function normalizeMemberAdminError(error: unknown) {
     return "You must be signed in to access this page.";
   }
 
+  if (normalized.includes("role number already exists") || normalized.includes("member with this role number already exists")) {
+    return "A member with that role number already exists.";
+  }
+
   return message;
 }
 
 export const MemberAdmin = () => {
-  const { isLoading } = useAuth();
+  const navigate = useNavigate();
+  const { isLoading, user, signOut } = useAuth();
   const verifyAccess = useMutation(api.members.verifyAccess);
   const addApproved = useMutation(api.members.addApproved);
   const removeApproved = useMutation(api.members.removeApproved);
+  const queueSelfRemoval = useMutation(api.members.queueSelfRemoval);
   const [password, setPassword] = useState("");
   const [unlockedPassword, setUnlockedPassword] = useState("");
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -138,15 +145,32 @@ export const MemberAdmin = () => {
       return;
     }
 
+    const isDeletingSelf = user?.role === memberToDelete.role;
     setDeletingMemberId(memberToDelete.id);
 
     try {
+      if (isDeletingSelf) {
+        await queueSelfRemoval({
+          password: unlockedPassword,
+          memberId: memberToDelete.id,
+        });
+        setMemberToDelete(null);
+        try {
+          navigate("/");
+          await signOut();
+        } catch {
+          // Best-effort sign-out before the queued account deletion completes.
+        }
+        toast.success("Your account deletion has been started.");
+        return;
+      }
+
       await removeApproved({
         password: unlockedPassword,
         memberId: memberToDelete.id,
       });
       setMemberToDelete(null);
-      toast.success("Member removed from the active member directory.");
+      toast.success("Member removed and account deleted.");
     } catch (error) {
       toast.error(normalizeMemberAdminError(error));
     } finally {
@@ -321,7 +345,7 @@ export const MemberAdmin = () => {
             </h2>
             <p className="mt-4 text-sm leading-7 text-[#5f7191]">
               Remove {memberToDelete.firstName} {memberToDelete.lastName} with role number {memberToDelete.role} from
-              the active member access list.
+              the active member access list. This will also delete their account, profile, sessions, and experiences.
             </p>
 
             <div className="mt-7 flex gap-3">
@@ -339,7 +363,7 @@ export const MemberAdmin = () => {
                 onClick={handleDelete}
                 className="h-12 flex-1 rounded-2xl bg-[#9b4b43] text-sm font-medium text-white transition hover:bg-[#843d36] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {deletingMemberId !== null ? "Deleting..." : "Delete member"}
+                {deletingMemberId !== null ? "Deleting..." : "Delete member and account"}
               </button>
             </div>
           </div>
