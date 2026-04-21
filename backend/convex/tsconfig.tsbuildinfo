@@ -1,1 +1,1 @@
-{"root":["./auth.config.ts","./auth.ts","./experience.ts","./http.ts","./members.ts","./schema.ts","./users.ts"],"version":"6.0.2"}
+{"root":["./auth.config.ts","./auth.ts","./experience.ts","./http.ts","./members.ts","./schema.ts","./seed.ts","./users.ts"],"version":"6.0.2"}

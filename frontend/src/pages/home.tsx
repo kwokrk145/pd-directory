@@ -98,7 +98,7 @@ export const Home = () => {
         </div>
 
       </section>
-      <section className="bg-[#300811] px-84 flex flex-col h-[110vh] gap-4 items-start justify-center">
+      <section className="flex flex-col items-start gap-4 bg-[#300811] px-6 py-20 md:px-12 xl:px-24 2xl:px-84">
         <h1 className="text-lg font-serif text-[#f0cf86]">
             ALUMNI NETWORK
         </h1>
@@ -108,11 +108,11 @@ export const Home = () => {
         <h1 className="text-lg text-[#e2c8b1] font-serif">
             From leading companies to top PhD programs, Theta Tau members are everywhere!
         </h1>
-        <div className="flex flex-row gap-6 pt-3 font-serif text-[#fff8ee]">
+        <div className="flex flex-wrap gap-4 pt-3 font-serif text-[#fff8ee]">
             <button
                 type="button"
                 onClick={() => setCategory("companies")}
-                className={`px-12 h-10 min-w-50 cursor-pointer border transition rounded-lg ${
+                className={`h-10 min-w-50 cursor-pointer rounded-lg border px-12 transition ${
                   category === "companies" ? "bg-[#571120] border-[#f0cf86]/45" : "border-[#f0cf86]/22 bg-white/6 hover:bg-[#571120]"
                 }`}
             >
@@ -121,7 +121,7 @@ export const Home = () => {
             <button
                 type="button"
                 onClick={() => setCategory("schools")}
-                className={`px-12 h-10 min-w-50 cursor-pointer border transition rounded-lg ${
+                className={`h-10 min-w-50 cursor-pointer rounded-lg border px-12 transition ${
                   category === "schools" ? "bg-[#571120] border-[#f0cf86]/45" : "border-[#f0cf86]/22 bg-white/6 hover:bg-[#571120]"
                 }`}
             >
@@ -130,7 +130,7 @@ export const Home = () => {
             
 
         </div>
-        <div className="grid w-full max-w-5xl grid-cols-4 justify-items-center gap-6 self-center pt-5">
+        <div className="grid w-full max-w-6xl grid-cols-1 gap-6 self-center pt-5 sm:grid-cols-2 xl:grid-cols-4">
           {displayedItems.map((item) => (
             <Card
               key={item.name}
