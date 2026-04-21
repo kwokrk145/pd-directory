@@ -31,10 +31,13 @@ function normalizeAuthError(error: unknown, flow: "signIn" | "signUp") {
   const normalized = message.toLowerCase();
 
   if (
+    normalized.includes("invalidaccountid") ||
+    normalized.includes("invalid account id") ||
     normalized.includes("incorrect password") ||
     normalized.includes("invalid password") ||
     normalized.includes("invalid credentials") ||
     normalized.includes("invalid login") ||
+    normalized.includes("called by client") ||
     normalized.includes("unauthorized")
   ) {
     return new Error("Incorrect email or password.");
