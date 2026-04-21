@@ -2,6 +2,7 @@ import { useEffect, useState, type ChangeEvent, type ComponentProps } from "reac
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import useAuth from "../hooks/use-auth";
+import { normalizeAuthErrorMessage } from "../lib/auth-errors";
 
 const registerHighlights = [
   {
@@ -94,7 +95,7 @@ export const Register = () => {
       toast.success("Account created successfully.");
       navigate("/profile");
     } catch (error) {
-      toast.error((error as Error).message);
+      toast.error(normalizeAuthErrorMessage(error, "signUp"));
     }
   };
 
