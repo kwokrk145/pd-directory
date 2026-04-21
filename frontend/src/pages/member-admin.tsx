@@ -57,6 +57,7 @@ export const MemberAdmin = () => {
   const { isLoading, user, signOut } = useAuth();
   const verifyAccess = useMutation(api.members.verifyAccess);
   const addApproved = useMutation(api.members.addApproved);
+  const updateApproved = useMutation(api.members.updateApproved);
   const removeApproved = useMutation(api.members.removeApproved);
   const queueSelfRemoval = useMutation(api.members.queueSelfRemoval);
   const [password, setPassword] = useState("");
@@ -64,7 +65,14 @@ export const MemberAdmin = () => {
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [form, setForm] = useState<MemberForm>(emptyMemberForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [deletingMemberId, setDeletingMemberId] = useState<Id<"members"> | null>(null);
+  const [memberToEdit, setMemberToEdit] = useState<{
+    id: Id<"members">;
+    firstName: string;
+    lastName: string;
+    role: string;
+  } | null>(null);
   const [memberToDelete, setMemberToDelete] = useState<{
     id: Id<"members">;
     firstName: string;
@@ -137,6 +145,46 @@ export const MemberAdmin = () => {
       toast.error(normalizeMemberAdminError(error));
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleEditSubmit: ComponentProps<"form">["onSubmit"] = async (event) => {
+    event.preventDefault();
+
+    if (!memberToEdit) {
+      return;
+    }
+
+    const firstName = memberToEdit.firstName.trim();
+    const lastName = memberToEdit.lastName.trim();
+    const role = Number(memberToEdit.role.trim());
+
+    if (!firstName || !lastName || !memberToEdit.role.trim()) {
+      toast.error("Enter first name, last name, and role number.");
+      return;
+    }
+
+    if (!Number.isInteger(role)) {
+      toast.error("Role number must be a whole number.");
+      return;
+    }
+
+    setIsSavingEdit(true);
+
+    try {
+      await updateApproved({
+        password: unlockedPassword,
+        memberId: memberToEdit.id,
+        firstName,
+        lastName,
+        role,
+      });
+      setMemberToEdit(null);
+      toast.success("Member details updated.");
+    } catch (error) {
+      toast.error(normalizeMemberAdminError(error));
+    } finally {
+      setIsSavingEdit(false);
     }
   };
 
@@ -300,21 +348,38 @@ export const MemberAdmin = () => {
                         </p>
                         <p className="mt-1 text-sm text-[#61728f]">Role {member.role}</p>
                       </div>
-                      <button
-                        type="button"
-                        disabled={deletingMemberId === member._id}
-                        onClick={() =>
-                          setMemberToDelete({
-                            id: member._id,
-                            firstName: member.firstName,
-                            lastName: member.lastName,
-                            role: member.role,
-                          })
-                        }
-                        className="rounded-xl border border-[#ead6d1] px-4 py-2 text-sm text-[#9b4b43] transition hover:bg-[#fff5f2] disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {deletingMemberId === member._id ? "Deleting..." : "Delete"}
-                      </button>
+                      <div className="flex shrink-0 gap-2">
+                        <button
+                          type="button"
+                          disabled={deletingMemberId === member._id}
+                          onClick={() =>
+                            setMemberToEdit({
+                              id: member._id,
+                              firstName: member.firstName,
+                              lastName: member.lastName,
+                              role: String(member.role),
+                            })
+                          }
+                          className="rounded-xl border border-[#d7deea] px-4 py-2 text-sm text-[#3a5a92] transition hover:bg-[#f6f9ff] disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          disabled={deletingMemberId === member._id}
+                          onClick={() =>
+                            setMemberToDelete({
+                              id: member._id,
+                              firstName: member.firstName,
+                              lastName: member.lastName,
+                              role: member.role,
+                            })
+                          }
+                          className="rounded-xl border border-[#ead6d1] px-4 py-2 text-sm text-[#9b4b43] transition hover:bg-[#fff5f2] disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {deletingMemberId === member._id ? "Deleting..." : "Delete"}
+                        </button>
+                      </div>
                     </div>
                   ))
                 ) : (
@@ -366,6 +431,90 @@ export const MemberAdmin = () => {
                 {deletingMemberId !== null ? "Deleting..." : "Delete member and account"}
               </button>
             </div>
+          </div>
+        </div>
+      ) : null}
+
+      {memberToEdit ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 py-8"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-member-title"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !isSavingEdit) {
+              setMemberToEdit(null);
+            }
+          }}
+        >
+          <div className="w-full max-w-md rounded-[24px] border border-[#d7deea] bg-white p-8 shadow-2xl">
+            <p className="text-sm uppercase tracking-[0.18em] text-[#3a5a92]">Edit Member</p>
+            <h2 id="edit-member-title" className="mt-3 font-serif text-2xl text-[#10244d]">
+              Update member details
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-[#5f7191]">
+              Changing the member name or role number will also update the linked directory account if one exists.
+            </p>
+
+            <form className="mt-6 space-y-5" onSubmit={handleEditSubmit}>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[#5e6f8d]">First name</label>
+                <input
+                  type="text"
+                  value={memberToEdit.firstName}
+                  onChange={(event) =>
+                    setMemberToEdit((current) =>
+                      current ? { ...current, firstName: event.target.value } : current,
+                    )
+                  }
+                  className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-[#fbfaf7] px-4 text-base outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[#5e6f8d]">Last name</label>
+                <input
+                  type="text"
+                  value={memberToEdit.lastName}
+                  onChange={(event) =>
+                    setMemberToEdit((current) =>
+                      current ? { ...current, lastName: event.target.value } : current,
+                    )
+                  }
+                  className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-[#fbfaf7] px-4 text-base outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[#5e6f8d]">Role number</label>
+                <input
+                  type="number"
+                  value={memberToEdit.role}
+                  onChange={(event) =>
+                    setMemberToEdit((current) => (current ? { ...current, role: event.target.value } : current))
+                  }
+                  className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-[#fbfaf7] px-4 text-base outline-none"
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  disabled={isSavingEdit}
+                  onClick={() => setMemberToEdit(null)}
+                  className="h-12 flex-1 rounded-2xl border border-[#ddd4c6] text-sm font-medium text-[#5f7191] transition hover:bg-[#fbfaf7] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingEdit}
+                  className="h-12 flex-1 rounded-2xl bg-[#3a5a92] text-sm font-medium text-white transition hover:bg-[#2f4a7a] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSavingEdit ? "Saving..." : "Save changes"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       ) : null}

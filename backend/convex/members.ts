@@ -111,6 +111,41 @@ async function deleteUserAccount(ctx: MutationCtx, role: number) {
   };
 }
 
+async function updateUserIdentity(
+  ctx: MutationCtx,
+  previousRole: number,
+  nextIdentity: { firstName: string; lastName: string; role: number },
+) {
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_role", (q) => q.eq("role", previousRole))
+    .unique();
+
+  if (!user) {
+    return null;
+  }
+
+  if (previousRole !== nextIdentity.role) {
+    const conflictingUser = await ctx.db
+      .query("users")
+      .withIndex("by_role", (q) => q.eq("role", nextIdentity.role))
+      .unique();
+
+    if (conflictingUser && conflictingUser._id !== user._id) {
+      throw new ConvexError("A user with this role number already exists");
+    }
+  }
+
+  await ctx.db.patch(user._id, {
+    firstName: nextIdentity.firstName,
+    lastName: nextIdentity.lastName,
+    name: `${nextIdentity.firstName} ${nextIdentity.lastName}`,
+    role: nextIdentity.role,
+  });
+
+  return await ctx.db.get(user._id);
+}
+
 async function deleteMemberAndAccount(ctx: MutationCtx, memberId: Id<"members">) {
   const member = await ctx.db.get(memberId);
 
@@ -124,6 +159,47 @@ async function deleteMemberAndAccount(ctx: MutationCtx, memberId: Id<"members">)
   return {
     message: "Member deleted",
     deletedAccount,
+  };
+}
+
+async function updateMemberAndAccount(
+  ctx: MutationCtx,
+  memberId: Id<"members">,
+  nextIdentity: { firstName: string; lastName: string; role: number },
+) {
+  const member = await ctx.db.get(memberId);
+
+  if (!member) {
+    throw new ConvexError("Member not found");
+  }
+
+  if (member.role !== nextIdentity.role) {
+    const existingRole = await ctx.db
+      .query("members")
+      .withIndex("by_role", (q) => q.eq("role", nextIdentity.role))
+      .unique();
+
+    if (existingRole && existingRole._id !== memberId) {
+      throw new ConvexError("A member with this role number already exists");
+    }
+  }
+
+  await ctx.db.patch(memberId, {
+    firstName: nextIdentity.firstName,
+    lastName: nextIdentity.lastName,
+    role: nextIdentity.role,
+  });
+
+  const updatedUser = await updateUserIdentity(ctx, member.role, nextIdentity);
+  const updatedMember = await ctx.db.get(memberId);
+
+  if (!updatedMember) {
+    throw new ConvexError("Failed to update member");
+  }
+
+  return {
+    member: updatedMember,
+    user: updatedUser,
   };
 }
 
@@ -203,6 +279,33 @@ export const removeApproved = mutation({
     await requireSignedIn(ctx);
     requireAdminPassword(args.password);
     return await deleteMemberAndAccount(ctx, args.memberId);
+  },
+});
+
+export const updateApproved = mutation({
+  args: {
+    password: v.string(),
+    memberId: v.id("members"),
+    firstName: v.string(),
+    lastName: v.string(),
+    role: v.number(),
+  },
+  handler: async (ctx, args) => {
+    await requireSignedIn(ctx);
+    requireAdminPassword(args.password);
+
+    const firstName = cleanName(args.firstName, "First name");
+    const lastName = cleanName(args.lastName, "Last name");
+
+    if (!Number.isInteger(args.role)) {
+      throw new ConvexError("Role number is required");
+    }
+
+    return await updateMemberAndAccount(ctx, args.memberId, {
+      firstName,
+      lastName,
+      role: args.role,
+    });
   },
 });
 
