@@ -11,7 +11,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@convex-api": ["./src/lib/convex-api"],
+      "@convex-data": ["./src/lib/convex-data"]
     }
   }
 }

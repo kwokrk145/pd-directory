@@ -4,7 +4,9 @@
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@convex-api": ["./src/lib/convex-api"],
+      "@convex-data": ["./src/lib/convex-data"]
     },
     "target": "ES2022",
     "useDefineForClassFields": true,

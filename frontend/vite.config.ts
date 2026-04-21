@@ -9,8 +9,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@convex-api": path.resolve(__dirname, "../backend/convex/_generated/api"),
-      "@convex-data": path.resolve(__dirname, "../backend/convex/_generated/dataModel"),
+      "@convex-api": path.resolve(__dirname, "./src/lib/convex-api.ts"),
+      "@convex-data": path.resolve(__dirname, "./src/lib/convex-data.ts"),
     },
   },
   server: {
