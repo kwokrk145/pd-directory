@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type ComponentProps } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useMutation } from "convex/react";
 import { api } from "@convex-api";
@@ -118,8 +117,7 @@ const validateDates = (
 };
 
 export const Profile = () => {
-  const navigate = useNavigate();
-  const { user, isLoading, isAuthenticated, refreshUser } = useAuth();
+  const { user, isLoading, refreshUser } = useAuth();
   const createExperience = useMutation(api.experience.create);
   const updateExperience = useMutation(api.experience.update);
   const deleteExperience = useMutation(api.experience.remove);
@@ -132,12 +130,6 @@ export const Profile = () => {
   const [activeTab, setActiveTab] = useState<ProfileTab>("experiences");
   const [profileForm, setProfileForm] = useState({ major: "", graduationYear: "" });
   const [isSavingProfile, setIsSavingProfile] = useState(false);
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      navigate("/login");
-    }
-  }, [isLoading, isAuthenticated, navigate]);
 
   useEffect(() => {
     if (user) {

@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./backend/convex/tsconfig.json"
+    },
+    {
+      "path": "./frontend/tsconfig.json"
+    }
+  ]
+}

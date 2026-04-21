@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState, type ChangeEvent, type ComponentProps } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState, type ChangeEvent, type ComponentProps } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { api } from "@convex-api";
@@ -19,8 +18,7 @@ const emptyMemberForm: MemberForm = {
 };
 
 export const MemberAdmin = () => {
-  const navigate = useNavigate();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isLoading } = useAuth();
   const verifyAccess = useMutation(api.members.verifyAccess);
   const addApproved = useMutation(api.members.addApproved);
   const removeApproved = useMutation(api.members.removeApproved);
@@ -30,13 +28,13 @@ export const MemberAdmin = () => {
   const [form, setForm] = useState<MemberForm>(emptyMemberForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingMemberId, setDeletingMemberId] = useState<Id<"members"> | null>(null);
+  const [memberToDelete, setMemberToDelete] = useState<{
+    id: Id<"members">;
+    firstName: string;
+    lastName: string;
+    role: number;
+  } | null>(null);
   const members = useQuery(api.members.listApproved, unlockedPassword ? { password: unlockedPassword } : "skip");
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      navigate("/login");
-    }
-  }, [isAuthenticated, isLoading, navigate]);
 
   const sortedMembers = useMemo(
     () => [...(members ?? [])].sort((a, b) => a.role - b.role),
@@ -105,14 +103,19 @@ export const MemberAdmin = () => {
     }
   };
 
-  const handleDelete = async (memberId: Id<"members">) => {
-    setDeletingMemberId(memberId);
+  const handleDelete = async () => {
+    if (!memberToDelete) {
+      return;
+    }
+
+    setDeletingMemberId(memberToDelete.id);
 
     try {
       await removeApproved({
         password: unlockedPassword,
-        memberId,
+        memberId: memberToDelete.id,
       });
+      setMemberToDelete(null);
       toast.success("Member removed from the active member directory.");
     } catch (error) {
       toast.error((error as Error).message);
@@ -127,10 +130,6 @@ export const MemberAdmin = () => {
         <p className="font-serif text-xl">Loading member tools...</p>
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return null;
   }
 
   return (
@@ -250,7 +249,14 @@ export const MemberAdmin = () => {
                       <button
                         type="button"
                         disabled={deletingMemberId === member._id}
-                        onClick={() => handleDelete(member._id)}
+                        onClick={() =>
+                          setMemberToDelete({
+                            id: member._id,
+                            firstName: member.firstName,
+                            lastName: member.lastName,
+                            role: member.role,
+                          })
+                        }
                         className="rounded-xl border border-[#ead6d1] px-4 py-2 text-sm text-[#9b4b43] transition hover:bg-[#fff5f2] disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {deletingMemberId === member._id ? "Deleting..." : "Delete"}
@@ -265,6 +271,50 @@ export const MemberAdmin = () => {
           </div>
         )}
       </section>
+
+      {memberToDelete ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 py-8"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-member-title"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && deletingMemberId === null) {
+              setMemberToDelete(null);
+            }
+          }}
+        >
+          <div className="w-full max-w-md rounded-[24px] border border-[#ead6d1] bg-white p-8 shadow-2xl">
+            <p className="text-sm uppercase tracking-[0.18em] text-[#9b4b43]">Delete Member</p>
+            <h2 id="delete-member-title" className="mt-3 font-serif text-2xl text-[#10244d]">
+              Are you sure?
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-[#5f7191]">
+              Remove {memberToDelete.firstName} {memberToDelete.lastName} with role number {memberToDelete.role} from
+              the active member access list.
+            </p>
+
+            <div className="mt-7 flex gap-3">
+              <button
+                type="button"
+                disabled={deletingMemberId !== null}
+                onClick={() => setMemberToDelete(null)}
+                className="h-12 flex-1 rounded-2xl border border-[#ddd4c6] text-sm font-medium text-[#5f7191] transition hover:bg-[#fbfaf7] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deletingMemberId !== null}
+                onClick={handleDelete}
+                className="h-12 flex-1 rounded-2xl bg-[#9b4b43] text-sm font-medium text-white transition hover:bg-[#843d36] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {deletingMemberId !== null ? "Deleting..." : "Delete member"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import Sidebar from "./components/sidebar";
 import Footer from "./components/footer";
+import { RedirectIfAuthenticated, RequireAuth } from "./components/route-guards";
 import Home from "./pages/home";
 import Login from "./pages/login";
 import Register from "./pages/register";
@@ -20,11 +21,15 @@ function App() {
       <main className="flex flex-1 min-h-0">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route element={<RedirectIfAuthenticated />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
           <Route path="/directory" element={<Directory />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/members/admin" element={<MemberAdmin />} />
+          <Route element={<RequireAuth />}>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/members/admin" element={<MemberAdmin />} />
+          </Route>
           <Route path="/users/:id" element={<UserProfile />} />
         </Routes>
       </main>
