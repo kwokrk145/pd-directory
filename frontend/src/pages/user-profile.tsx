@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@convex-api";
 import type { Id } from "@convex-data";
 import { getMemberMeta } from "../lib/member-meta";
-import type { UserType } from "../lib/types";
+import type { Experience, UserType } from "../lib/types";
 
 export const UserProfile = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ export const UserProfile = () => {
             firstName: data.firstName ?? "",
             lastName: data.lastName ?? "",
             email: data.email ?? "",
-            experiences: data.experiences?.map((experience) => ({
+            experiences: data.experiences?.map((experience: Experience) => ({
               ...experience,
               id: experience._id,
             })),

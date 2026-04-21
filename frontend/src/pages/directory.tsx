@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "@convex-api";
 import ProfileCard from "../components/profilecard";
-import type { UserType } from "../lib/types";
+import type { Experience, UserType } from "../lib/types";
 
 const PAGE_SIZE = 9;
 
@@ -15,12 +15,12 @@ export const Directory = () => {
   const isLoading = data === undefined;
   const users = useMemo<UserType[]>(
     () =>
-      (data ?? []).map((user) => ({
+      (data ?? []).map((user: UserType) => ({
         ...user,
         firstName: user.firstName ?? "",
         lastName: user.lastName ?? "",
         email: user.email ?? "",
-        experiences: user.experiences?.map((experience) => ({
+        experiences: user.experiences?.map((experience: Experience) => ({
           ...experience,
           id: experience._id,
         })),

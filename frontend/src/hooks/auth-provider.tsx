@@ -2,7 +2,7 @@ import { createContext, useCallback, useMemo, type ReactNode } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useConvexAuth, useQuery } from "convex/react";
 import { api } from "@convex-api";
-import type { UserType } from "../lib/types";
+import type { Experience, UserType } from "../lib/types";
 import { normalizeAuthError } from "../lib/auth-errors";
 
 export type AuthContextValue = {
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         firstName: profile.firstName ?? "",
         lastName: profile.lastName ?? "",
         email: profile.email ?? "",
-        experiences: profile.experiences?.map((experience) => ({
+        experiences: profile.experiences?.map((experience: Experience) => ({
           ...experience,
           id: experience._id,
         })),
