@@ -4,6 +4,77 @@ import { useConvexAuth, useQuery } from "convex/react";
 import { api } from "@convex-api";
 import type { UserType } from "../lib/types";
 
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  if (typeof error === "string" && error) {
+    return error;
+  }
+
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string" &&
+    error.message
+  ) {
+    return error.message;
+  }
+
+  return "";
+}
+
+function normalizeAuthError(error: unknown, flow: "signIn" | "signUp") {
+  const message = getErrorMessage(error);
+  const normalized = message.toLowerCase();
+
+  if (
+    normalized.includes("incorrect password") ||
+    normalized.includes("invalid password") ||
+    normalized.includes("invalid credentials") ||
+    normalized.includes("invalid login") ||
+    normalized.includes("unauthorized")
+  ) {
+    return new Error("Incorrect email or password.");
+  }
+
+  if (normalized.includes("password must be at least 8 characters")) {
+    return new Error("Password must be at least 8 characters.");
+  }
+
+  if (normalized.includes("member account already exists") || normalized.includes("already exists")) {
+    return new Error("An account already exists for this member.");
+  }
+
+  if (normalized.includes("approved member")) {
+    return new Error("Your name and role number do not match an approved member.");
+  }
+
+  if (normalized.includes("email is required")) {
+    return new Error("Enter your email address.");
+  }
+
+  if (normalized.includes("first name is required") || normalized.includes("last name is required")) {
+    return new Error("Enter your first and last name.");
+  }
+
+  if (normalized.includes("role number is required")) {
+    return new Error("Enter your role number.");
+  }
+
+  if (message) {
+    return new Error(message);
+  }
+
+  return new Error(
+    flow === "signIn"
+      ? "Unable to sign in. Check your credentials and try again."
+      : "Unable to create your account. Verify your information and try again.",
+  );
+}
+
 export type AuthContextValue = {
   user: UserType | null;
   isAuthenticated: boolean;
@@ -29,25 +100,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = useCallback(
     async (email: string, password: string) => {
-      await convexSignIn("password", {
-        email,
-        password,
-        flow: "signIn",
-      });
+      try {
+        await convexSignIn("password", {
+          email,
+          password,
+          flow: "signIn",
+        });
+      } catch (error) {
+        throw normalizeAuthError(error, "signIn");
+      }
     },
     [convexSignIn],
   );
 
   const signUp = useCallback(
     async (firstName: string, lastName: string, email: string, password: string, role: number) => {
-      await convexSignIn("password", {
-        firstName,
-        lastName,
-        email,
-        password,
-        role,
-        flow: "signUp",
-      });
+      try {
+        await convexSignIn("password", {
+          firstName,
+          lastName,
+          email,
+          password,
+          role,
+          flow: "signUp",
+        });
+      } catch (error) {
+        throw normalizeAuthError(error, "signUp");
+      }
     },
     [convexSignIn],
   );
