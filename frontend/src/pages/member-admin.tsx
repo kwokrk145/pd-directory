@@ -91,8 +91,8 @@ export const MemberAdmin = () => {
       await verifyAccess({ password });
       setUnlockedPassword(password);
       toast.success("Active member tools unlocked.");
-    } catch (error) {
-      toast.error(normalizeMemberAdminError(error));
+    } catch {
+      toast.error("You are not authorized to access this page.");
     } finally {
       setIsUnlocking(false);
     }
