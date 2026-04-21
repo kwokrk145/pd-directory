@@ -100,8 +100,8 @@ export const Register = () => {
   };
 
   return (
-    <div className="flex min-h-full w-full flex-1 overflow-hidden">
-      <div className="flex min-h-full w-1/2 items-center justify-center border-r border-[#f0cf86]/12 bg-[#300811] px-6 py-8">
+    <div className="flex min-h-[calc(100dvh-89px)] w-full overflow-hidden">
+      <div className="flex min-h-[calc(100dvh-89px)] w-1/2 items-center justify-center border-r border-[#f0cf86]/12 bg-[#300811] px-8 py-8">
         <div className="flex max-w-xl flex-col gap-8">
           <div className="rounded-3xl border border-[#f0cf86]/20 bg-[#3a1a0f] px-4 py-2">
             <h1 className="font-serif text-base text-[#f0cf86]">Chapter Access</h1>
@@ -115,9 +115,9 @@ export const Register = () => {
             Join the directory so members can learn from your work, experiences, and academic path.
           </p>
 
-          <div className="space-y-5 pt-1">
+          <div className="space-y-5 pt-3">
             {registerHighlights.map((item) => (
-              <div key={item.title} className="mb-8 flex gap-3">
+              <div key={item.title} className="mb-7 flex gap-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#f0cf86]/12 bg-white/4 text-sm font-semibold text-[#f0cf86]">
                   <span>{item.icon}</span>
                 </div>
@@ -132,18 +132,18 @@ export const Register = () => {
         </div>
       </div>
 
-      <div className="flex min-h-full w-1/2 items-center justify-center bg-[#f7f2eb] px-6 py-8 text-[#10244d]">
+      <div className="flex min-h-[calc(100dvh-89px)] w-1/2 items-center justify-center bg-[#f7f2eb] px-8 py-8 text-[#10244d]">
         <div className="w-full max-w-md">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6e7f9e]">Member Registration</p>
 
           <h1 className="mt-4 font-serif text-3xl tracking-tight text-[#10244d]">Create account</h1>
 
-          <p className="mt-3 max-w-md font-serif text-base leading-7 text-[#6c7c97]">
+          <p className="mt-3 max-w-md font-serif text-base leading-8 text-[#6c7c97]">
             Set up your account to build your chapter profile and add your experiences.
           </p>
 
-          <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-2 gap-4">
+          <form className="mt-7 space-y-5" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="mb-2 block font-serif text-base font-medium text-[#5e6f8d]">First name</label>
                 <input
@@ -219,7 +219,7 @@ export const Register = () => {
             </button>
           </form>
 
-          <p className="mt-6 text-center font-sans text-sm text-[#61728f]">
+          <p className="mt-7 text-center font-sans text-sm text-[#61728f]">
             Already have an account?{" "}
             <button
               type="button"
