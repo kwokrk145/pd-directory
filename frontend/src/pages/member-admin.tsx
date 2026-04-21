@@ -17,6 +17,36 @@ const emptyMemberForm: MemberForm = {
   role: "",
 };
 
+function normalizeMemberAdminError(error: unknown) {
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : typeof error === "object" &&
+            error !== null &&
+            "message" in error &&
+            typeof error.message === "string"
+          ? error.message
+          : "Unable to access active member tools.";
+
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes("invalid active member password")) {
+    return "You are not authorized to access this page.";
+  }
+
+  if (normalized.includes("active member password is not configured")) {
+    return "Active member access is not configured yet.";
+  }
+
+  if (normalized.includes("unauthorized")) {
+    return "You must be signed in to access this page.";
+  }
+
+  return message;
+}
+
 export const MemberAdmin = () => {
   const { isLoading } = useAuth();
   const verifyAccess = useMutation(api.members.verifyAccess);
@@ -62,7 +92,7 @@ export const MemberAdmin = () => {
       setUnlockedPassword(password);
       toast.success("Active member tools unlocked.");
     } catch (error) {
-      toast.error((error as Error).message);
+      toast.error(normalizeMemberAdminError(error));
     } finally {
       setIsUnlocking(false);
     }
@@ -97,7 +127,7 @@ export const MemberAdmin = () => {
       setForm(emptyMemberForm);
       toast.success("Member added to the active member directory.");
     } catch (error) {
-      toast.error((error as Error).message);
+      toast.error(normalizeMemberAdminError(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -118,7 +148,7 @@ export const MemberAdmin = () => {
       setMemberToDelete(null);
       toast.success("Member removed from the active member directory.");
     } catch (error) {
-      toast.error((error as Error).message);
+      toast.error(normalizeMemberAdminError(error));
     } finally {
       setDeletingMemberId(null);
     }
