@@ -6,10 +6,17 @@
 @custom-variant dark (&:is(.dark *));
 
 @layer base {
+  html,
   body {
-    background: #22070f;
+    min-height: 100%;
+    margin: 0;
+    background-color: #22070f;
     color: #fff8ee;
     @apply bg-background text-foreground;
+  }
+  #root {
+    min-height: 100vh;
+    background-color: #22070f;
   }
   * {
     @apply border-border outline-ring/50;

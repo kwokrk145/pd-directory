@@ -14,11 +14,12 @@ import MemberAdmin from "./pages/member-admin";
 function App() {
   const location = useLocation();
   const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
+  const mainClassName = isAuthPage ? "flex flex-1 min-h-0" : "min-h-0 flex-1 bg-[#300811]";
 
   return (
     <div className="min-h-screen flex flex-col">
       <Sidebar />
-      <main className="flex flex-1 min-h-0">
+      <main className={mainClassName}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route element={<RedirectIfAuthenticated />}>

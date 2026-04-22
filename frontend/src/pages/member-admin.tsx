@@ -235,7 +235,7 @@ export const MemberAdmin = () => {
   }
 
   return (
-    <div className="min-h-full w-full bg-[#f7f2eb] text-[#10244d]">
+    <div className="w-full bg-[#f7f2eb] text-[#10244d]">
       <section className="bg-[#300811] px-12 py-12 text-[#fff8ee]">
         <div className="mx-auto max-w-5xl">
           <p className="text-sm uppercase tracking-[0.18em] text-[#f0cf86]">Active Member Directory</p>
