@@ -122,14 +122,17 @@ export const Profile = () => {
   const updateExperience = useMutation(api.experience.update);
   const deleteExperience = useMutation(api.experience.remove);
   const updateProfile = useMutation(api.users.updateMe);
+  const setProfilePhoto = useMutation(api.users.setProfilePhoto);
+  const removeProfilePhoto = useMutation(api.users.removeProfilePhoto);
   const [form, setForm] = useState<ExperienceForm>(emptyForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingExperienceId, setEditingExperienceId] = useState<Id<"experiences"> | null>(null);
   const [isDeletingId, setIsDeletingId] = useState<Id<"experiences"> | null>(null);
   const [isExperienceDialogOpen, setIsExperienceDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("experiences");
-  const [profileForm, setProfileForm] = useState({ major: "", graduationYear: "", image: "" });
+  const [profileForm, setProfileForm] = useState({ major: "", graduationYear: "" });
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isSavingPhoto, setIsSavingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const editorImageRef = useRef<HTMLImageElement | null>(null);
   const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false);
@@ -145,7 +148,6 @@ export const Profile = () => {
       setProfileForm({
         major: user.major ?? "",
         graduationYear: user.graduationYear ?? "",
-        image: user.image ?? "",
       });
     }
   }, [user]);
@@ -178,7 +180,7 @@ export const Profile = () => {
     };
 
   const handleProfileChange =
-    (field: "major" | "graduationYear" | "image") =>
+    (field: "major" | "graduationYear") =>
     (event: ChangeEvent<HTMLInputElement>) => {
       setProfileForm((current) => ({ ...current, [field]: event.target.value }));
     };
@@ -212,7 +214,6 @@ export const Profile = () => {
       setPhotoScale(1);
       setPhotoOffsetX(0);
       setPhotoOffsetY(0);
-      setIsPhotoDialogOpen(true);
     };
     reader.onerror = () => {
       toast.error("Unable to read that image.");
@@ -223,6 +224,10 @@ export const Profile = () => {
   };
 
   const closePhotoDialog = () => {
+    if (isSavingPhoto) {
+      return;
+    }
+
     setIsPhotoDialogOpen(false);
     setDraftPhoto("");
     setPhotoScale(1);
@@ -232,8 +237,33 @@ export const Profile = () => {
     dragStateRef.current = null;
   };
 
-  const saveDraftPhoto = () => {
+  const openPhotoDialog = () => {
+    setDraftPhoto(user?.image ?? "");
+    setPhotoScale(1);
+    setPhotoOffsetX(0);
+    setPhotoOffsetY(0);
+    setIsPhotoDialogOpen(true);
+  };
+
+  const saveDraftPhoto = async () => {
     const image = editorImageRef.current;
+
+    if (!draftPhoto) {
+      setIsSavingPhoto(true);
+
+      try {
+        await removeProfilePhoto({});
+        await refreshUser();
+        toast.success("Profile photo updated.");
+        closePhotoDialog();
+      } catch (error) {
+        toast.error((error as Error).message);
+      } finally {
+        setIsSavingPhoto(false);
+      }
+
+      return;
+    }
 
     if (!image) {
       toast.error("Unable to prepare that image.");
@@ -265,8 +295,25 @@ export const Profile = () => {
     context.clearRect(0, 0, size, size);
     context.drawImage(image, drawX, drawY, drawWidth, drawHeight);
 
-    setProfileForm((current) => ({ ...current, image: canvas.toDataURL("image/jpeg", 0.92) }));
-    closePhotoDialog();
+    setIsSavingPhoto(true);
+
+    try {
+      await setProfilePhoto({ image: canvas.toDataURL("image/jpeg", 0.92) });
+      await refreshUser();
+      toast.success("Profile photo updated.");
+      closePhotoDialog();
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setIsSavingPhoto(false);
+    }
+  };
+
+  const removeDraftPhoto = () => {
+    setDraftPhoto("");
+    setPhotoScale(1);
+    setPhotoOffsetX(0);
+    setPhotoOffsetY(0);
   };
 
   const startPhotoDrag = (clientX: number, clientY: number) => {
@@ -405,7 +452,6 @@ export const Profile = () => {
 
     const major = profileForm.major.trim();
     const graduationYear = profileForm.graduationYear.trim();
-    const image = profileForm.image.trim();
 
     if (!major || !graduationYear) {
       toast.error("Enter both your major and graduation year.");
@@ -415,7 +461,7 @@ export const Profile = () => {
     setIsSavingProfile(true);
 
     try {
-      await updateProfile({ major, graduationYear, image: image || undefined });
+      await updateProfile({ major, graduationYear });
       await refreshUser();
       toast.success("Profile details updated.");
     } catch (error) {
@@ -445,7 +491,7 @@ export const Profile = () => {
         <div className="mx-auto flex max-w-6xl items-center gap-8">
           <button
             type="button"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={openPhotoDialog}
             className="group relative h-24 w-24 shrink-0 overflow-hidden rounded-full"
           >
             <input
@@ -488,17 +534,7 @@ export const Profile = () => {
               <span className="rounded-xl border border-[#6a4e45] bg-[#3a1a0f] px-4 py-2 text-sm text-[#f0cf86]">Theta Chapter</span>
             </div>
 
-            <div className="mt-5 flex flex-wrap gap-3">
-              {profileForm.image ? (
-                <button
-                  type="button"
-                  onClick={() => setProfileForm((current) => ({ ...current, image: "" }))}
-                  className="rounded-xl border border-[#6a4e45] bg-transparent px-4 py-2 text-sm text-[#f0cf86] transition hover:bg-[#3a1a0f]"
-                >
-                  Remove photo
-                </button>
-              ) : null}
-            </div>
+            <p className="mt-4 text-sm text-[#d0b4a4]">Hover over your photo to edit it.</p>
           </div>
         </div>
       </section>
@@ -602,9 +638,9 @@ export const Profile = () => {
 
               <div className="mx-auto mt-8 max-w-2xl rounded-[24px] border border-[#e8dfd1] bg-[#fffdf9] p-6">
                 <div className="mb-6 flex items-center gap-4 border-b border-[#eee4d8] pb-6">
-                  {profileForm.image ? (
+                  {user.image ? (
                     <img
-                      src={profileForm.image}
+                      src={user.image}
                       alt={`${user.firstName} ${user.lastName}`}
                       className="h-14 w-14 shrink-0 rounded-full object-cover"
                     />
@@ -865,7 +901,19 @@ export const Profile = () => {
             </div>
 
             <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-[24px] border border-[#e8dfd1] bg-[#fbfaf7] p-6">
+              <div className="relative rounded-[24px] border border-[#e8dfd1] bg-[#fbfaf7] p-6">
+                {draftPhoto ? (
+                  <button
+                    type="button"
+                    onClick={removeDraftPhoto}
+                    disabled={isSavingPhoto}
+                    className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-[#ead6d1] bg-white text-xl font-medium text-[#9b4b43] shadow-sm transition hover:bg-[#fff5f2] disabled:cursor-not-allowed disabled:opacity-60"
+                    aria-label="Remove photo"
+                    title="Remove photo"
+                  >
+                    ×
+                  </button>
+                ) : null}
                 <div
                   className={`mx-auto flex h-72 w-72 items-center justify-center overflow-hidden rounded-full bg-[#e8edf5] ${isDraggingPhoto ? "cursor-grabbing" : "cursor-grab"}`}
                   onPointerDown={handlePhotoPointerDown}
@@ -874,17 +922,23 @@ export const Profile = () => {
                   onPointerCancel={endPhotoDrag}
                   onPointerLeave={endPhotoDrag}
                 >
-                  <img
-                    ref={editorImageRef}
-                    src={draftPhoto}
-                    alt="Profile photo preview"
-                    className="h-full w-full select-none object-cover"
-                    draggable={false}
-                    style={{
-                      transform: `translate(${photoOffsetX}px, ${photoOffsetY}px) scale(${photoScale})`,
-                      transformOrigin: "center",
-                    }}
-                  />
+                  {draftPhoto ? (
+                    <img
+                      ref={editorImageRef}
+                      src={draftPhoto}
+                      alt="Profile photo preview"
+                      className="h-full w-full select-none object-cover"
+                      draggable={false}
+                      style={{
+                        transform: `translate(${photoOffsetX}px, ${photoOffsetY}px) scale(${photoScale})`,
+                        transformOrigin: "center",
+                      }}
+                    />
+                  ) : (
+                    <div className={`flex h-full w-full items-center justify-center rounded-full text-7xl font-medium ${accentClass}`}>
+                      {initials}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -908,18 +962,28 @@ export const Profile = () => {
                   </p>
                 </div>
 
-                <div className="flex gap-3 pt-2">
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isSavingPhoto}
+                    className="h-12 rounded-2xl border border-[#ddd4c6] px-5 text-sm font-medium text-[#5f7191] transition hover:bg-[#fbfaf7] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {draftPhoto ? "Replace photo" : "Upload photo"}
+                  </button>
                   <button
                     type="button"
                     onClick={saveDraftPhoto}
-                    className="h-12 flex-1 rounded-2xl bg-[#300811] text-sm font-medium text-[#fff8ee] transition hover:bg-[#571120]"
+                    disabled={isSavingPhoto}
+                    className="h-12 min-w-40 rounded-2xl bg-[#300811] px-5 text-sm font-medium text-[#fff8ee] transition hover:bg-[#571120] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Use this photo
+                    {isSavingPhoto ? "Saving..." : "Done"}
                   </button>
                   <button
                     type="button"
                     onClick={closePhotoDialog}
-                    className="h-12 rounded-2xl border border-[#ddd4c6] px-5 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
+                    disabled={isSavingPhoto}
+                    className="h-12 min-w-32 rounded-2xl border border-[#ddd4c6] px-5 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Cancel
                   </button>

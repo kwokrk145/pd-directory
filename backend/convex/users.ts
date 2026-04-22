@@ -117,7 +117,6 @@ export const updateMe = mutation({
   args: {
     major: v.string(),
     graduationYear: v.string(),
-    image: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -140,7 +139,6 @@ export const updateMe = mutation({
     await ctx.db.patch(userId, {
       major,
       graduationYear,
-      image: args.image?.trim() || undefined,
     });
 
     const updatedUser = await ctx.db.get(userId);
@@ -158,5 +156,43 @@ export const updateMe = mutation({
       ...toPublicUser(updatedUser),
       experiences,
     };
+  },
+});
+
+export const setProfilePhoto = mutation({
+  args: {
+    image: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    const image = args.image.trim();
+
+    if (!image) {
+      throw new ConvexError("Profile photo is required");
+    }
+
+    await ctx.db.patch(userId, { image });
+
+    return await ctx.db.get(userId);
+  },
+});
+
+export const removeProfilePhoto = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    await ctx.db.patch(userId, { image: "" });
+
+    return await ctx.db.get(userId);
   },
 });
