@@ -61,6 +61,7 @@ export const MemberAdmin = () => {
   const removeApproved = useMutation(api.members.removeApproved);
   const queueSelfRemoval = useMutation(api.members.queueSelfRemoval);
   const [password, setPassword] = useState("");
+  const [memberSearchQuery, setMemberSearchQuery] = useState("");
   const [unlockedPassword, setUnlockedPassword] = useState("");
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [form, setForm] = useState<MemberForm>(emptyMemberForm);
@@ -85,6 +86,17 @@ export const MemberAdmin = () => {
     () => [...(members ?? [])].sort((a, b) => a.role - b.role),
     [members],
   );
+  const filteredMembers = useMemo(() => {
+    const query = memberSearchQuery.trim().toLowerCase();
+
+    if (!query) {
+      return sortedMembers;
+    }
+
+    return sortedMembers.filter((member) =>
+      `${member.firstName} ${member.lastName}`.toLowerCase().includes(query),
+    );
+  }, [memberSearchQuery, sortedMembers]);
 
   const handleFormChange =
     (field: keyof MemberForm) =>
@@ -329,15 +341,28 @@ export const MemberAdmin = () => {
                   <h2 className="mt-3 font-serif text-2xl">Current access list</h2>
                 </div>
                 <span className="rounded-xl bg-[#f8f3e7] px-4 py-2 text-sm text-[#8f6710]">
-                  {sortedMembers.length} members
+                  {filteredMembers.length} members
                 </span>
               </div>
 
-              <div className="mt-6 space-y-3">
+              <div className="mt-6">
+                <label className="flex h-12 items-center rounded-2xl border border-[#ddd4c6] bg-[#fbfaf7] px-4">
+                  <input
+                    type="search"
+                    value={memberSearchQuery}
+                    onChange={(event) => setMemberSearchQuery(event.target.value)}
+                    placeholder="Search members by name..."
+                    className="w-full bg-transparent text-sm text-[#10244d] outline-none placeholder:text-[#8a97ad]"
+                    aria-label="Search approved members"
+                  />
+                </label>
+              </div>
+
+              <div className="mt-6 max-h-128 space-y-3 overflow-y-auto pr-2">
                 {members === undefined ? (
                   <p className="text-sm text-[#61728f]">Loading members...</p>
-                ) : sortedMembers.length > 0 ? (
-                  sortedMembers.map((member) => (
+                ) : filteredMembers.length > 0 ? (
+                  filteredMembers.map((member) => (
                     <div
                       key={member._id}
                       className="flex items-center justify-between gap-4 rounded-2xl border border-[#e8dfd1] bg-[#fffdf9] px-4 py-3"
@@ -383,7 +408,9 @@ export const MemberAdmin = () => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-[#61728f]">No approved members added yet.</p>
+                  <p className="text-sm text-[#61728f]">
+                    {sortedMembers.length === 0 ? "No approved members added yet." : "No approved members match your search."}
+                  </p>
                 )}
               </div>
             </div>
