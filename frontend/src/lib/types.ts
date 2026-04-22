@@ -23,6 +23,7 @@ export type UserType = {
   firstName: string;
   lastName: string;
   username?: string;
+  image?: string;
   email: string;
   role?: number;
   experiences?: Experience[];

@@ -59,9 +59,17 @@ export const UserProfile = () => {
     <div className="min-h-full w-full bg-[#f7f2eb] text-[#10244d]">
       <section className="bg-[#300811] px-16 py-14 text-[#fff8ee]">
         <div className="mx-auto flex max-w-7xl items-center gap-8">
-          <div className={`flex h-24 w-24 items-center justify-center rounded-full text-3xl font-medium ${accentClass}`}>
-            {initials}
-          </div>
+          {user.image ? (
+            <img
+              src={user.image}
+              alt={`${user.firstName} ${user.lastName}`}
+              className="h-24 w-24 rounded-full object-cover"
+            />
+          ) : (
+            <div className={`flex h-24 w-24 items-center justify-center rounded-full text-3xl font-medium ${accentClass}`}>
+              {initials}
+            </div>
+          )}
 
           <div>
             <h1 className="font-serif text-4xl">

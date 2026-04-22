@@ -19,9 +19,17 @@ export const ProfileCard = ({ user, onClick }: ProfileCardProps) => {
       className="w-full rounded-[28px] border border-[#eadfcd] bg-white p-8 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-start gap-5">
-        <div className={`flex h-18 w-18 shrink-0 items-center justify-center rounded-full text-4xl font-medium ${accentClass}`}>
-          {initials}
-        </div>
+        {user.image ? (
+          <img
+            src={user.image}
+            alt={`${user.firstName} ${user.lastName}`}
+            className="h-18 w-18 shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <div className={`flex h-18 w-18 shrink-0 items-center justify-center rounded-full text-4xl font-medium ${accentClass}`}>
+            {initials}
+          </div>
+        )}
 
         <div className="min-w-0">
           <h3 className="font-sans text-xl font-semibold text-[#10244d]">

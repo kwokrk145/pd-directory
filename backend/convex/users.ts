@@ -7,6 +7,7 @@ import type { Doc } from "./_generated/dataModel";
 function toPublicUser(user: Doc<"users">) {
   return {
     id: user._id,
+    image: user.image,
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -116,6 +117,7 @@ export const updateMe = mutation({
   args: {
     major: v.string(),
     graduationYear: v.string(),
+    image: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -138,6 +140,7 @@ export const updateMe = mutation({
     await ctx.db.patch(userId, {
       major,
       graduationYear,
+      image: args.image?.trim() || undefined,
     });
 
     const updatedUser = await ctx.db.get(userId);
