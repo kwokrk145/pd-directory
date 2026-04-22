@@ -509,7 +509,7 @@ export const Profile = () => {
           <button
             type="button"
             onClick={openPhotoDialog}
-            className="group relative h-24 w-24 shrink-0 overflow-hidden rounded-full"
+            className="group relative h-24 w-24 shrink-0 cursor-pointer overflow-hidden rounded-full"
           >
             <input
               ref={fileInputRef}
@@ -561,7 +561,7 @@ export const Profile = () => {
           <button
             type="button"
             onClick={() => setActiveTab("experiences")}
-            className={`h-12 flex-1 rounded-2xl text-sm font-medium transition ${
+            className={`h-12 flex-1 cursor-pointer rounded-2xl text-sm font-medium transition ${
               activeTab === "experiences"
                 ? "bg-[#300811] text-[#fff8ee]"
                 : "text-[#5f7191] hover:bg-[#fbfaf7]"
@@ -572,7 +572,7 @@ export const Profile = () => {
           <button
             type="button"
             onClick={() => setActiveTab("settings")}
-            className={`h-12 flex-1 rounded-2xl text-sm font-medium transition ${
+            className={`h-12 flex-1 cursor-pointer rounded-2xl text-sm font-medium transition ${
               activeTab === "settings"
                 ? "bg-[#300811] text-[#fff8ee]"
                 : "text-[#5f7191] hover:bg-[#fbfaf7]"
@@ -596,7 +596,7 @@ export const Profile = () => {
               <button
                 type="button"
                 onClick={openAddExperienceDialog}
-                className="h-11 rounded-xl bg-[#300811] px-5 text-sm font-medium text-[#fff8ee] transition hover:bg-[#571120]"
+                className="h-11 cursor-pointer rounded-xl bg-[#300811] px-5 text-sm font-medium text-[#fff8ee] transition hover:bg-[#571120]"
               >
                 Add experience
               </button>
@@ -620,7 +620,7 @@ export const Profile = () => {
                     <button
                       type="button"
                       onClick={() => handleEdit(experience)}
-                      className="rounded-xl border border-[#ddd4c6] px-4 py-2 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
+                      className="cursor-pointer rounded-xl border border-[#ddd4c6] px-4 py-2 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
                     >
                       Edit
                     </button>
@@ -628,7 +628,7 @@ export const Profile = () => {
                       type="button"
                       disabled={isDeletingId === experience.id}
                       onClick={() => handleDelete(experience.id as Id<"experiences">)}
-                      className="rounded-xl border border-[#ead6d1] px-4 py-2 text-sm text-[#9b4b43] transition hover:bg-[#fff5f2] disabled:opacity-60"
+                      className="cursor-pointer rounded-xl border border-[#ead6d1] px-4 py-2 text-sm text-[#9b4b43] transition hover:bg-[#fff5f2] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {isDeletingId === experience.id ? "Deleting..." : "Delete"}
                     </button>
@@ -712,7 +712,7 @@ export const Profile = () => {
                   <button
                     type="submit"
                     disabled={isSavingProfile}
-                    className="h-12 w-full rounded-2xl bg-[#300811] text-sm font-medium text-[#fff8ee] transition hover:bg-[#571120] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-12 w-full cursor-pointer rounded-2xl bg-[#300811] text-sm font-medium text-[#fff8ee] transition hover:bg-[#571120] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {isSavingProfile ? "Saving..." : "Save academic details"}
                   </button>
@@ -752,7 +752,7 @@ export const Profile = () => {
               <button
                 type="button"
                 onClick={closeExperienceDialog}
-                className="h-10 rounded-xl border border-[#ddd4c6] px-4 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
+                className="h-10 cursor-pointer rounded-xl border border-[#ddd4c6] px-4 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
               >
                 Close
               </button>
@@ -876,7 +876,7 @@ export const Profile = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-12 flex-1 rounded-2xl bg-[#300811] text-base font-medium text-[#fff8ee] transition hover:bg-[#571120] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="h-12 flex-1 cursor-pointer rounded-2xl bg-[#300811] text-base font-medium text-[#fff8ee] transition hover:bg-[#571120] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isSubmitting ? "Saving..." : editingExperienceId !== null ? "Save changes" : "Add experience"}
                 </button>
@@ -884,7 +884,7 @@ export const Profile = () => {
                 <button
                   type="button"
                   onClick={closeExperienceDialog}
-                  className="h-12 rounded-2xl border border-[#ddd4c6] px-5 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
+                  className="h-12 cursor-pointer rounded-2xl border border-[#ddd4c6] px-5 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
                 >
                   Cancel
                 </button>
@@ -921,7 +921,7 @@ export const Profile = () => {
               <button
                 type="button"
                 onClick={closePhotoDialog}
-                className="h-10 rounded-xl border border-[#ddd4c6] px-4 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
+                className="h-10 cursor-pointer rounded-xl border border-[#ddd4c6] px-4 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7]"
               >
                 Close
               </button>
@@ -934,7 +934,7 @@ export const Profile = () => {
                     type="button"
                     onClick={removeDraftPhoto}
                     disabled={isSavingPhoto}
-                    className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-[#ead6d1] bg-white text-xl font-medium text-[#9b4b43] shadow-sm transition hover:bg-[#fff5f2] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="absolute right-5 top-5 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-[#ead6d1] bg-white text-xl font-medium text-[#9b4b43] shadow-sm transition hover:bg-[#fff5f2] disabled:cursor-not-allowed disabled:opacity-60"
                     aria-label="Remove photo"
                     title="Remove photo"
                   >
@@ -994,7 +994,7 @@ export const Profile = () => {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isSavingPhoto}
-                    className="h-12 rounded-2xl border border-[#ddd4c6] px-5 text-sm font-medium text-[#5f7191] transition hover:bg-[#fbfaf7] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-12 cursor-pointer rounded-2xl border border-[#ddd4c6] px-5 text-sm font-medium text-[#5f7191] transition hover:bg-[#fbfaf7] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {draftPhoto ? "Replace photo" : "Upload photo"}
                   </button>
@@ -1002,7 +1002,7 @@ export const Profile = () => {
                     type="button"
                     onClick={saveDraftPhoto}
                     disabled={isSavingPhoto}
-                    className="h-12 min-w-40 rounded-2xl bg-[#300811] px-5 text-sm font-medium text-[#fff8ee] transition hover:bg-[#571120] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-12 min-w-40 cursor-pointer rounded-2xl bg-[#300811] px-5 text-sm font-medium text-[#fff8ee] transition hover:bg-[#571120] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {isSavingPhoto ? "Saving..." : "Done"}
                   </button>
@@ -1010,7 +1010,7 @@ export const Profile = () => {
                     type="button"
                     onClick={closePhotoDialog}
                     disabled={isSavingPhoto}
-                    className="h-12 min-w-32 rounded-2xl border border-[#ddd4c6] px-5 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-12 min-w-32 cursor-pointer rounded-2xl border border-[#ddd4c6] px-5 text-sm text-[#5f7191] transition hover:bg-[#fbfaf7] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Cancel
                   </button>
