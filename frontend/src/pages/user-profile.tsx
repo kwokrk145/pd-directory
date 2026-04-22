@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "@convex-api";
 import type { Id } from "@convex-data";
-import { getMemberMeta } from "../lib/member-meta";
+import { getMemberMeta, sortExperiencesByRecency } from "../lib/member-meta";
 import type { Experience, UserType } from "../lib/types";
 
 export const UserProfile = () => {
@@ -27,6 +27,7 @@ export const UserProfile = () => {
         : null,
     [data],
   );
+  const sortedExperiences = useMemo(() => sortExperiencesByRecency(user?.experiences ?? []), [user?.experiences]);
 
   if (isLoading) {
     return (
@@ -97,8 +98,8 @@ export const UserProfile = () => {
           <h2 className="text-sm uppercase tracking-[0.18em] text-[#61728f]">Experiences</h2>
 
           <div className="mt-10 space-y-6">
-            {user.experiences && user.experiences.length > 0 ? (
-              user.experiences.map((experience) => (
+            {sortedExperiences.length > 0 ? (
+              sortedExperiences.map((experience) => (
                 <div key={experience.id} className="rounded-[28px] border border-[#e5dac8] bg-white p-8">
                   <h3 className="text-2xl font-semibold">{experience.title}</h3>
                   <p className="mt-2 text-lg text-[#5f7191]">{experience.organization}</p>

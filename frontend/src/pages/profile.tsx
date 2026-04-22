@@ -4,7 +4,7 @@ import { useMutation } from "convex/react";
 import { api } from "@convex-api";
 import type { Id } from "@convex-data";
 import useAuth from "../hooks/use-auth";
-import { getMemberMeta } from "../lib/member-meta";
+import { getMemberMeta, sortExperiencesByRecency } from "../lib/member-meta";
 import type { Experience } from "../lib/types";
 
 const months = [
@@ -170,7 +170,7 @@ export const Profile = () => {
   }, [user]);
 
   const sortedExperiences = useMemo(
-    () => [...(user?.experiences ?? [])].sort((a, b) => (b._creationTime ?? 0) - (a._creationTime ?? 0)),
+    () => sortExperiencesByRecency(user?.experiences ?? []),
     [user?.experiences]
   );
 
