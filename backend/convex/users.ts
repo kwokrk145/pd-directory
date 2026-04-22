@@ -92,6 +92,26 @@ export const get = query({
   },
 });
 
+export const emailExists = query({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const email = args.email.trim().toLowerCase();
+
+    if (!email) {
+      return false;
+    }
+
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", email))
+      .unique();
+
+    return existingUser !== null;
+  },
+});
+
 export const updateMe = mutation({
   args: {
     major: v.string(),

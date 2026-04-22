@@ -1,6 +1,8 @@
 import { useEffect, useState, type ChangeEvent, type ComponentProps } from "react";
+import { useConvex } from "convex/react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { api } from "@convex-api";
 import useAuth from "../hooks/use-auth";
 import { normalizeAuthErrorMessage } from "../lib/auth-errors";
 
@@ -32,6 +34,7 @@ type RegisterForm = {
 };
 
 export const Register = () => {
+  const convex = useConvex();
   const navigate = useNavigate();
   const { signUp, isAuthenticated } = useAuth();
   const [form, setForm] = useState<RegisterForm>({
@@ -91,6 +94,12 @@ export const Register = () => {
     }
 
     try {
+      const emailExists = await convex.query(api.users.emailExists, { email });
+      if (emailExists) {
+        toast.error("Email already exists.");
+        return;
+      }
+
       await signUp(firstName, lastName, email, password, role);
       toast.success("Account created successfully.");
       navigate("/profile");

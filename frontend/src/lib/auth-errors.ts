@@ -82,6 +82,10 @@ export function normalizeAuthErrorMessage(error: unknown, flow: "signIn" | "sign
     return "Password must be at least 8 characters.";
   }
 
+  if (normalized.includes("email already exists")) {
+    return "Email already exists.";
+  }
+
   if (normalized.includes("member account already exists") || normalized.includes("already exists")) {
     return "An account already exists for this member.";
   }

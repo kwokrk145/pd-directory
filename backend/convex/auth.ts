@@ -78,12 +78,16 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   },
   callbacks: {
     async createOrUpdateUser(ctx, args) {
-      if (args.existingUserId !== null) {
+      const appCtx = ctx as unknown as MutationCtx;
+      const email = normalizeEmail(args.profile.email);
+
+      if (
+        args.existingUserId !== null &&
+        (!("firstName" in args.profile) || !("lastName" in args.profile) || !("role" in args.profile))
+      ) {
         return args.existingUserId;
       }
 
-      const appCtx = ctx as unknown as MutationCtx;
-      const email = normalizeEmail(args.profile.email);
       const firstName = requiredString(args.profile.firstName, "First name is required");
       const lastName = requiredString(args.profile.lastName, "Last name is required");
       const role = parseRole(args.profile.role);
@@ -97,6 +101,15 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
 
       if (!member) {
         throw new ConvexError("Name and role number do not match an approved member");
+      }
+
+      const existingEmail = await appCtx.db
+        .query("users")
+        .withIndex("email", (q) => q.eq("email", email))
+        .unique();
+
+      if (existingEmail) {
+        throw new ConvexError("Email already exists");
       }
 
       const existingRole = await appCtx.db
