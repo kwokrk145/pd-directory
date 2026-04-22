@@ -23,6 +23,23 @@ const months = [
 ];
 
 const years = Array.from({ length: 36 }, (_, index) => String(new Date().getFullYear() + 5 - index));
+const currentYear = new Date().getFullYear();
+const graduationYears = Array.from({ length: currentYear + 6 - 2010 + 1 }, (_, index) => String(currentYear + 6 - index));
+const majors = [
+  "Applied Mathematics and Statistics",
+  "Biomedical Engineering",
+  "Chemical and Biomolecular Engineering",
+  "Civil Engineering",
+  "Computer Engineering",
+  "Computer Science",
+  "Electrical Engineering",
+  "Engineering Mechanics",
+  "Environmental Engineering",
+  "General Engineering",
+  "Materials Science and Engineering",
+  "Mechanical Engineering",
+  "Systems Engineering",
+];
 
 type ExperienceForm = {
   title: string;
@@ -181,7 +198,7 @@ export const Profile = () => {
 
   const handleProfileChange =
     (field: "major" | "graduationYear") =>
-    (event: ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       setProfileForm((current) => ({ ...current, [field]: event.target.value }));
     };
 
@@ -658,27 +675,37 @@ export const Profile = () => {
                 </div>
 
                 <form className="space-y-5" onSubmit={handleProfileSubmit}>
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
+                  <div className="grid gap-5 sm:grid-cols-[1.35fr_0.9fr]">
+                    <div className="min-w-0">
                       <label className="mb-2 block text-sm font-medium text-[#5e6f8d]">Major</label>
-                      <input
-                        type="text"
+                      <select
                         value={profileForm.major}
                         onChange={handleProfileChange("major")}
-                        placeholder="Computer Science"
-                        className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-white px-4 text-base text-[#10244d] outline-none placeholder:text-[#8a97ad]"
-                      />
+                        className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-white px-4 text-base text-[#10244d] outline-none"
+                      >
+                        <option value="">Select your major</option>
+                        {majors.map((majorOption) => (
+                          <option key={majorOption} value={majorOption}>
+                            {majorOption}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <label className="mb-2 block text-sm font-medium text-[#5e6f8d]">Graduation year</label>
-                      <input
-                        type="text"
+                      <select
                         value={profileForm.graduationYear}
                         onChange={handleProfileChange("graduationYear")}
-                        placeholder="2026"
-                        className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-white px-4 text-base text-[#10244d] outline-none placeholder:text-[#8a97ad]"
-                      />
+                        className="h-12 w-full rounded-2xl border border-[#ddd4c6] bg-white px-4 text-base text-[#10244d] outline-none"
+                      >
+                        <option value="">Select graduation year</option>
+                        {graduationYears.map((yearOption) => (
+                          <option key={yearOption} value={yearOption}>
+                            {yearOption}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
